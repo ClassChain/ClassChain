@@ -146,9 +146,15 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-    const map = L.map('map').setView([32.4279, 53.6880], 5);
+<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
 
+<script>
+const map = L.map('map', {
+        renderer: L.canvas()  // مهم: این خط باعث می‌شود همه چیز خیلی روان و بدون تأخیر زوم شود
+    }).setView([32.4279, 53.6880], 5);
+    
     let selectedLayer = null;
     let selectedCountyLayer = null;
     let selectedProjectMarker = null;
@@ -177,7 +183,7 @@
         const b = Math.round(0 + ratio * 236);
         return `rgb(${r},${g},${b})`;
     }
-
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // آیکون‌های پروژه
     const normalIcon = L.divIcon({
         html: `<div style="background:#e74c3c; width:12px; height:12px; border-radius:50%; border:2px solid white; box-shadow:0 0 8px rgba(0,0,0,0.7);"></div>`,
@@ -191,6 +197,36 @@ const selectedIcon = L.divIcon({
         className: 'custom-div-icon',
         iconSize: [28, 28],
         iconAnchor: [14, 14]
+    });
+const projectIcon = L.divIcon({
+        html: `<div style="background:#e74c3c; width:10px; height:10px; border-radius:50%; border:2px solid white; box-shadow:0 0 6px rgba(0,0,0,0.8);"></div>`,
+        className: 'custom-project-marker',
+        iconSize: [14, 14],
+        iconAnchor: [7, 7]
+    });
+
+    const selectedProjectIcon = L.divIcon({
+        html: `<div style="background:#f1c40f; width:18px; height:18px; border-radius:50%; border:3px solid white; box-shadow:0 0 12px #f1c40f;"></div>`,
+        className: 'custom-project-marker',
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
+    });
+
+    // ایجاد خوشه مارکرها (این دقیقاً همان چیزی است که در وب‌جی‌آی‌اس‌های حرفه‌ای می‌بینی)
+    const markersCluster = L.markerClusterGroup({
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        maxClusterRadius: 60, // در زوم کم خوشه‌های بزرگ‌تر
+        iconCreateFunction: function(cluster) {
+            const count = cluster.getChildCount();
+            let size = count < 10 ? 40 : count < 100 ? 50 : 60;
+            return L.divIcon({
+                html: `<div style="background:#e74c3c;color:white;font-weight:bold;border-radius:50%;width:${size}px;height:${size}px;line-height:${size}px;text-align:center;box-shadow:0 0 12px rgba(0,0,0,0.6);font-size:14px;">${count}</div>`,
+                className: '',
+                iconSize: [size, size]
+            });
+        }
     });
 
 // اضافه کردن انیمیشن پالس
@@ -333,75 +369,72 @@ const selectedIcon = L.divIcon({
 
     // بارگذاری پروژه‌های آموزشی از Projects.json
 fetch('Projects.json')
-        .then(response => response.json())
+        .then(r => r.json())
         .then(data => {
-            // تبدیل فرمت ArcGIS → GeoJSON استاندارد
-            const geojsonFeatures = data.features.map(feature => {
-                const attrs = feature.attributes;
-                return {
-                    type: "Feature",
-                    geometry: {
-                        type: "Point",
-                        coordinates: [attrs.x, attrs.y]  // lng, lat
-                    },
-                    properties: attrs
-                };
-            });
+            const features = data.features;
 
-            projectsLayer = L.geoJSON(geojsonFeatures, {
-                pointToLayer: (feature, latlng) => {
-                    return L.marker(latlng, { icon: normalIcon });
-                },
-                onEachFeature: (feature, layer) => {
-                    const p = feature.properties;
+            features.forEach(feature => {
+                const a = feature.attributes;
+                const x = a.x;
+                const y = a.y;
 
-                    layer.on('click', e => {
-                        L.DomEvent.stopPropagation(e);
+                // فقط اگر مختصات معتبر بود اضافه کن
+                if (x && y && !isNaN(x) && !isNaN(y)) {
+                    const marker = L.marker([y, x], { icon: projectIcon }); // توجه: [lat, lng]
 
-                        // ریست کردن انتخاب‌های قبلی
-                        if (selectedProjectMarker && selectedProjectMarker !== layer) {
-                            selectedProjectMarker.setIcon(normalIcon);
+                    marker.properties = a; // ذخیره اطلاعات برای کلیک
+
+                    marker.on('click', function(e) {
+                        // پاک کردن انتخاب قبلی
+                        if (selectedProjectMarker) {
+                            selectedProjectMarker.setIcon(projectIcon);
                         }
+
+                        // انتخاب جدید
+                        this.setIcon(selectedProjectIcon);
+                        selectedProjectMarker = this;
+
+                        // ریست کردن استان و شهرستان
                         if (selectedLayer) geo.resetStyle(selectedLayer);
                         if (selectedCountyLayer) countiesLayer?.resetStyle(selectedCountyLayer);
 
-                        layer.setIcon(selectedIcon);
-                        selectedProjectMarker = layer;
-
+                        // نمایش اطلاعات در پنل
                         showInPanel(`
                             <div class="project-info">
-                                <h3>${p['نام پروژه'] || 'بدون نام'}</h3>
-                                <div class="info-item"><span class="info-label">کد پروژه:</span><span class="info-value">${p['کد پروژه']}</span></div>
-                                <div class="info-item"><span class="info-label">استان:</span><span class="info-value">${p['استان']}</span></div>
-                                <div class="info-item"><span class="info-label">منطقه:</span><span class="info-value">${p['منطقه']}</span></div>
-                                <div class="info-item"><span class="info-label">نوع پروژه:</span><span class="info-value">${p['نوع پروژه (نیاز)']}</span></div>
-                                <div class="info-item"><span class="info-label">تعداد کلاس:</span><span class="info-value">${p['تعداد کلاس'] || '—'}</span></div>
-                                <div class="info-item"><span class="info-label">زیربنا:</span><span class="info-value">${p['زیربنا'] ? Number(p['زیربنا']).toLocaleString('fa-IR') : '—'} مترمربع</span></div>
-                                <div class="info-item"><span class="info-label">وضعیت:</span><span class="info-value">${p['وضعیت راهبری پروژه'] || '—'}</span></div>
-                                <div class="info-item"><span class="info-label">مسئول:</span><span class="info-value">${p['مسئول پروژه'] || '—'}</span></div>
-                                <div class="info-item"><span class="info-label">تلفن:</span><span class="info-value">${p['شماره تلفن مسئول پروژه'] || '—'}</span></div>
-                                ${p['آدرس پروژه'] ? `<div class="info-item"><span class="info-label">آدرس:</span><span class="info-value">${p['آدرس پروژه']}</span></div>` : ''}
+                                <h3>${a['نام پروژه'] || 'بدون نام'}</h3>
+                                <div class="info-item"><span class="info-label">کد پروژه:</span><span class="info-value">${a['کد پروژه']}</span></div>
+                                <div class="info-item"><span class="info-label">استان:</span><span class="info-value">${a['استان']}</span></div>
+                                <div class="info-item"><span class="info-label">منطقه:</span><span class="info-value">${a['منطقه']}</span></div>
+                                <div class="info-item"><span class="info-label">نوع پروژه:</span><span class="info-value">${a['نوع پروژه (نیاز)']}</span></div>
+                                <div class="info-item"><span class="info-label">تعداد کلاس:</span><span class="info-value">${a['تعداد کلاس'] || '—'}</span></div>
+                                <div class="info-item"><span class="info-label">زیربنا:</span><span class="info-value">${a['زیربنا'] ? Number(a['زیربنا']).toLocaleString('fa-IR') + ' م²' : '—'}</span></div>
+                                <div class="info-item"><span class="info-label">وضعیت:</span><span class="info-value">${a['وضعیت راهبری پروژه'] || '—'}</span></div>
+                                <div class="info-item"><span class="info-label">مسئول:</span><span class="info-value">${a['مسئول پروژه'] || '—'}</span></div>
+                                <div class="info-item"><span class="info-label">تلفن:</span><span class="info-value">${a['شماره تلفن مسئول پروژه'] || '—'}</span></div>
+                                ${a['آدرس پروژه'] ? `<div class="info-item"><span class="info-label">آدرس:</span><span class="info-value">${a['آدرس پروژه']}</span></div>` : ''}
                             </div>
                         `);
 
-                        map.panTo(latlng, { animate: true });
+                        map.setView([y, x], 14, { animate: true });
                     });
-                }
-            }).addTo(map);
 
-            console.log(`${geojsonFeatures.length} پروژه با موفقیت بارگذاری شد`);
+                    markersCluster.addLayer(marker);
+                }
+            });
+
+            map.addLayer(markersCluster);
+            console.log(`${features.length} پروژه با خوشه‌بندی بارگذاری شد`);
         })
         .catch(err => {
-            console.error("خطا در بارگذاری Projects.json:", err);
-            alert("فایل Projects.json پیدا نشد یا فرمت آن مشکل دارد!");
+            console.error("خطا در بارگذاری پروژه‌ها:", err);
         });
     
     // بازگشت به ایران
-    function zoomToIran() {
+function zoomToIran() {
         map.flyTo([32.4279, 53.6880], 5, { animate: true, duration: 1.5 });
-        if (selectedLayer) { geo.resetStyle(selectedLayer); selectedLayer = null; }
+        if (selectedLayer) { geo?.resetStyle(selectedLayer); selectedLayer = null; }
         if (selectedCountyLayer) { countiesLayer?.resetStyle(selectedCountyLayer); selectedCountyLayer = null; }
-        if (selectedProjectMarker) { selectedProjectMarker.setIcon(normalIcon); selectedProjectMarker = null; }
+        if (selectedProjectMarker) { selectedProjectMarker.setIcon(projectIcon); selectedProjectMarker = null; }
         if (countiesLayer) map.removeLayer(countiesLayer);
 
         showInPanel(`
@@ -412,7 +445,6 @@ fetch('Projects.json')
             </div>
         `);
     }
-
     // لایه‌های پایه
     const basemapLayers = {
         carto: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: '© CartoDB' }),
@@ -433,4 +465,5 @@ fetch('Projects.json')
 </script>
 </body>
 </html>
+
 
