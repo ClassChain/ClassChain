@@ -61,7 +61,7 @@
 
         #map { flex: 1; height: 100vh; }
 
-        /* آیکون پروژه — زیبا، پالسی و مقیاس‌پذیر */
+        /* آیکون پروژه — زیبا و مقیاس‌پذیر */
         .project-marker {
             background: #10b981;
             border: 3px solid #fff;
@@ -130,9 +130,9 @@ let selectedLayer = null;
 let selectedCountyLayer = null;
 let countiesLayer = null;
 let projectsLayer = L.layerGroup().addTo(map);
+let geo = null; // برای استان‌ها
 
-// === لایه استان‌ها ===
-let geo;
+// === لایه استان‌ها (همه چیز قبلی حفظ شد) ===
 fetch('ir-new.json')
     .then(r => r.json())
     .then(data => {
@@ -159,7 +159,7 @@ fetch('ir-new.json')
         }).addTo(map);
     });
 
-// === لایه شهرستان‌ها ===
+// === لایه شهرستان‌ها (همه چیز قبلی حفظ شد) ===
 function showProvinceCounties(provinceName) {
     if (countiesLayer) map.removeLayer(countiesLayer);
     countiesLayer = L.geoJSON(null, {
@@ -219,7 +219,6 @@ async function loadProjects() {
                 map.flyTo([y, x], 15, { duration: 1.5 });
             });
 
-            // فقط در زوم ۷ به بالا نمایش بده
             map.on('zoomend', () => {
                 if (map.getZoom() >= 7) {
                     marker.addTo(projectsLayer);
@@ -254,13 +253,13 @@ function showProjectInfo(p) {
     `;
 }
 
-// بارگذاری همه لایه‌ها
+// === بارگذاری همه چیز ===
 loadProjects();
 
-// بازگشت به ایران
+// === بازگشت به ایران ===
 function zoomToIran() {
     map.flyTo([32.4279, 53.6880], 6, { duration: 1.5 });
-    if (selectedLayer) geo.resetStyle(selectedLayer);
+    if (selectedLayer) geo?.resetStyle(selectedLayer);
     selectedLayer = null;
     if (countiesLayer) map.removeLayer(countiesLayer);
     document.getElementById('infoContent').innerHTML = `
