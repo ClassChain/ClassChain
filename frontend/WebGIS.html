@@ -537,6 +537,10 @@ function zoomToIran() {
         if (selectedProjectMarker) { selectedProjectMarker.setIcon(projectIcon); selectedProjectMarker = null; }
         if (countiesLayer) map.removeLayer(countiesLayer);
 
+        map.removeLayer(countyCluster);
+        map.removeLayer(projectCluster);
+        map.addLayer(provinceCluster);
+        currentLevel = 'province';
         showInPanel(`
             <div class="no-selection">
                 <div class="icon">Map</div>
@@ -565,6 +569,7 @@ function zoomToIran() {
 </script>
 </body>
 </html>
+
 
 
 
