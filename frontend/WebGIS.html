@@ -149,7 +149,7 @@
 <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
-
+   
 <script>
 const map = L.map('map', {
         renderer: L.canvas()  // مهم: این خط باعث می‌شود همه چیز خیلی روان و بدون تأخیر زوم شود
@@ -228,6 +228,44 @@ const projectIcon = L.divIcon({
             });
         }
     });
+const provinceIcon = count => L.divIcon({
+        html: `<div style="background:#e74c3c; color:white; font-weight:bold; font-size:15px; width:50px; height:50px; border-radius:50%; border:4px solid white; box-shadow:0 4px 15px rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center;">${count}</div>`,
+        className: '',
+        iconSize: [50, 50],
+        iconAnchor: [25, 25]
+    });
+
+    const countyIcon = count => L.divIcon({
+        html: `<div style="background:#c0392b; color:white; font-weight:bold; font-size:13px; width:40px; height:40px; border-radius:50%; border:3px solid #fff; box-shadow:0 3px 12px rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center;">${count}</div>`,
+        className: '',
+        iconSize: [40, 40],
+        iconAnchor: [20, 20]
+    });
+
+    const singleProjectIcon = L.divIcon({
+        html: `<div style="background:#e74c3c; width:12px; height:12px; border-radius:50%; border:2px solid white; box-shadow:0 0 10px rgba(0,0,0,0.8);"></div>`,
+        className: '',
+        iconSize: [16, 16],
+        iconAnchor: [8, 8]
+    });
+
+    const selectedProjectIcon = L.divIcon({
+        html: `<div style="background:#f1c40f; width:20px; height:20px; border-radius:50%; border:4px solid white; box-shadow:0 0 15px #f1c40f;"></div>`,
+        className: '',
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
+    });
+
+    // گروه‌های مختلف برای هر سطح
+    const provinceCluster = L.markerClusterGroup({ disableClusteringAtZoom: 8 });
+    const countyCluster = L.markerClusterGroup({ disableClusteringAtZoom: 11 });
+    const projectCluster = L.markerClusterGroup({
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true
+    });
+
+    let currentLevel = 'province'; // province | county | project
 
 // اضافه کردن انیمیشن پالس
     const style = document.createElement('style');
@@ -368,67 +406,129 @@ const projectIcon = L.divIcon({
     }
 
     // بارگذاری پروژه‌های آموزشی از Projects.json
-fetch('Projects.json')
+// بارگذاری پروژه‌ها و تجمیع هوشمند
+    fetch('Projects.json')
         .then(r => r.json())
         .then(data => {
-            const features = data.features;
+            const projects = data.features.map(f => ({
+                ...f.attributes,
+                lat: f.geometry.y,
+                lng: f.geometry.x
+            })).filter(p => p.lat && p.lng);
 
-            features.forEach(feature => {
-                const a = feature.attributes;
-                const x = a.x;
-                const y = a.y;
+            // 1. تجمیع بر اساس استان
+            const byProvince = {};
+            projects.forEach(p => {
+                const key = p['استان'] || 'نامشخص';
+                if (!byProvince[key]) byProvince[key] = { count: 0, lat: 0, lng: 0, items: [] };
+                byProvince[key].count++;
+                byProvince[key].lat += p.lat;
+                byProvince[key].lng += p.lng;
+                byProvince[key].items.push(p);
+            });
 
-                // فقط اگر مختصات معتبر بود اضافه کن
-                if (x && y && !isNaN(x) && !isNaN(y)) {
-                    const marker = L.marker([y, x], { icon: projectIcon }); // توجه: [lat, lng]
+            // 2. تجمیع بر اساس شهرستان (منطقه)
+            const byCounty = {};
+            projects.forEach(p => {
+                const prov = p['استان'] || 'نامشخص';
+                const key = `${prov}|||${p['منطقه'] || 'نامشخص'}`;
+                if (!byCounty[key]) byCounty[key] = { count: 0, lat: 0, lng: 0, items: [], province: prov, county: p['منطقه'] };
+                byCounty[key].count++;
+                byCounty[key].lat += p.lat;
+                byCounty[key].lng += p.lng;
+                byCounty[key].items.push(p);
+            });
 
-                    marker.properties = a; // ذخیره اطلاعات برای کلیک
+            // نمایش اولیه: فقط استان‌ها
+            Object.keys(byProvince).forEach(prov => {
+                const item = byProvince[prov];
+                const lat = item.lat / item.count;
+                const lng = item.lng / item.count;
 
-                    marker.on('click', function(e) {
-                        // پاک کردن انتخاب قبلی
-                        if (selectedProjectMarker) {
-                            selectedProjectMarker.setIcon(projectIcon);
-                        }
+                const marker = L.marker([lat, lng], { icon: provinceIcon(item.count) });
+                marker.provinceName = prov;
+                marker.count = item.count;
 
-                        // انتخاب جدید
+                marker.on('click', () => {
+                    map.setView([lat, lng], 9, { animate: true });
+                    // وقتی کاربر کلیک کرد، به سطح شهرستان برویم
+                    switchToCountyLevel(prov);
+                });
+
+                provinceCluster.addLayer(marker);
+            });
+
+            map.addLayer(provinceCluster);
+
+            // تابع تغییر به سطح شهرستان
+            function switchToCountyLevel(provinceName) {
+                map.removeLayer(provinceCluster);
+                countyCluster.clearLayers();
+
+                const relatedCounties = Object.values(byCounty).filter(c => c.province === provinceName);
+
+                relatedCounties.forEach(item => {
+                    const lat = item.lat / item.count;
+                    const lng = item.lng / item.count;
+
+                    const marker = L.marker([lat, lng], { icon: countyIcon(item.count) });
+                    marker.countyName = item.county;
+                    marker.provinceName = provinceName;
+                    marker.count = item.count;
+
+                    marker.on('click', () => {
+                        map.setView([lat, lng], 12, { animate: true });
+                        switchToProjectLevel(provinceName, item.county);
+                    });
+
+                    countyCluster.addLayer(marker);
+                });
+
+                map.addLayer(countyCluster);
+                currentLevel = 'county';
+            }
+
+            // تابع نمایش تمام نقاط پروژه در یک شهرستان
+            function switchToProjectLevel(provinceName, countyName) {
+                map.removeLayer(countyCluster);
+                projectCluster.clearLayers();
+
+                const relatedProjects = projects.filter(p =>
+                    (p['استان'] || '') === provinceName &&
+                    (p['منطقه'] || '') === countyName
+                ).forEach(p => {
+                    const marker = L.marker([p.lat, p.lng], { icon: singleProjectIcon });
+                    marker.properties = p;
+
+                    marker.on('click', function() {
+                        if (selectedProjectMarker) selectedProjectMarker.setIcon(singleProjectIcon);
                         this.setIcon(selectedProjectIcon);
                         selectedProjectMarker = this;
 
-                        // ریست کردن استان و شهرستان
+                        // ریست استان و شهرستان
                         if (selectedLayer) geo.resetStyle(selectedLayer);
                         if (selectedCountyLayer) countiesLayer?.resetStyle(selectedCountyLayer);
 
-                        // نمایش اطلاعات در پنل
                         showInPanel(`
                             <div class="project-info">
-                                <h3>${a['نام پروژه'] || 'بدون نام'}</h3>
-                                <div class="info-item"><span class="info-label">کد پروژه:</span><span class="info-value">${a['کد پروژه']}</span></div>
-                                <div class="info-item"><span class="info-label">استان:</span><span class="info-value">${a['استان']}</span></div>
-                                <div class="info-item"><span class="info-label">منطقه:</span><span class="info-value">${a['منطقه']}</span></div>
-                                <div class="info-item"><span class="info-label">نوع پروژه:</span><span class="info-value">${a['نوع پروژه (نیاز)']}</span></div>
-                                <div class="info-item"><span class="info-label">تعداد کلاس:</span><span class="info-value">${a['تعداد کلاس'] || '—'}</span></div>
-                                <div class="info-item"><span class="info-label">زیربنا:</span><span class="info-value">${a['زیربنا'] ? Number(a['زیربنا']).toLocaleString('fa-IR') + ' م²' : '—'}</span></div>
-                                <div class="info-item"><span class="info-label">وضعیت:</span><span class="info-value">${a['وضعیت راهبری پروژه'] || '—'}</span></div>
-                                <div class="info-item"><span class="info-label">مسئول:</span><span class="info-value">${a['مسئول پروژه'] || '—'}</span></div>
-                                <div class="info-item"><span class="info-label">تلفن:</span><span class="info-value">${a['شماره تلفن مسئول پروژه'] || '—'}</span></div>
-                                ${a['آدرس پروژه'] ? `<div class="info-item"><span class="info-label">آدرس:</span><span class="info-value">${a['آدرس پروژه']}</span></div>` : ''}
+                                <h3>${p['نام پروژه'] || 'بدون نام'}</h3>
+                                <div class="info-item"><span class="info-label">کد پروژه:</span><span class="info-value">${p['کد پروژه']}</span></div>
+                                <div class="info-item"><span class="info-label">استان:</span><span class="info-value">${p['استان']}</span></div>
+                                <div class="info-item"><span class="info-label">منطقه:</span><span class="info-value">${p['منطقه']}</span></div>
+                                <div class="info-item"><span class="info-label">نوع پروژه:</span><span class="info-value">${p['نوع پروژه (نیاز)']}</span></div>
+                                <div class="info-item"><span class="info-label">تعداد کلاس:</span><span class="info-value">${p['تعداد کلاس'] || '—'}</span></div>
+                                <div class="info-item"><span class="info-label">زیربنا:</span><span class="info-value">${p['زیربنا'] ? Number(p['زیربنا']).toLocaleString('fa-IR') + ' م²' : '—'}</span></div>
+                                <div class="info-item"><span class="info-label">وضعیت:</span><span class="info-value">${p['وضعیت راهبری پروژه']}</span></div>
                             </div>
                         `);
-
-                        map.setView([y, x], 14, { animate: true });
                     });
 
-                    markersCluster.addLayer(marker);
-                }
-            });
+                    projectCluster.addLayer(marker);
+                });
 
-            map.addLayer(markersCluster);
-            console.log(`${features.length} پروژه با خوشه‌بندی بارگذاری شد`);
-        })
-        .catch(err => {
-            console.error("خطا در بارگذاری پروژه‌ها:", err);
-        });
-    
+                map.addLayer(projectCluster);
+                currentLevel = 'project';
+            }
     // بازگشت به ایران
 function zoomToIran() {
         map.flyTo([32.4279, 53.6880], 5, { animate: true, duration: 1.5 });
@@ -465,5 +565,6 @@ function zoomToIran() {
 </script>
 </body>
 </html>
+
 
 
