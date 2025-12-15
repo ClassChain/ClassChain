@@ -158,7 +158,7 @@
 
 <script>
 const map = L.map('map', {
-        renderer: L.canvas()  // مهم: این خط باعث می‌شود همه چیز خیلی روان و بدون تأخیر زوم شود
+        renderer: L.canvas()
     }).setView([32.4279, 53.6880], 5);
     
     let selectedLayer = null;
@@ -170,7 +170,6 @@ const map = L.map('map', {
     function showInPanel(content) {
         document.getElementById('infoPanel').innerHTML = content;
     }
-
     // رنگ استان‌ها
     function getProvinceColor(capita, min, max) {
         if (capita === 0 || capita == null) return '#34495e';
@@ -384,23 +383,19 @@ fetch('Projects.json')
                 const x = a.x;
                 const y = a.y;
 
-                // فقط اگر مختصات معتبر بود اضافه کن
                 if (x && y && !isNaN(x) && !isNaN(y)) {
-                    const marker = L.marker([y, x], { icon: projectIcon }); // توجه: [lat, lng]
+                    const marker = L.marker([y, x], { icon: projectIcon });
 
-                    marker.properties = a; // ذخیره اطلاعات برای کلیک
+                    marker.properties = a;
 
                     marker.on('click', function(e) {
-                        // پاک کردن انتخاب قبلی
                         if (selectedProjectMarker) {
                             selectedProjectMarker.setIcon(projectIcon);
                         }
 
-                        // انتخاب جدید
                         this.setIcon(selectedProjectIcon);
                         selectedProjectMarker = this;
 
-                        // ریست کردن استان و شهرستان
                         if (selectedLayer) geo.resetStyle(selectedLayer);
                         if (selectedCountyLayer) countiesLayer?.resetStyle(selectedCountyLayer);
 
@@ -410,7 +405,7 @@ let financialInfo = '';
         financialInfo = `
         <div class="info-item" style="background:rgba(46,204,113,0.2); padding:12px; border-radius:8px; margin-top:15px;">
             <span class="info-label">خزانه هوشمند پروژه:</span><br>
-            <span class="info-value">
+            <span class="info-value contract-address">
                 <a href="https://polygonscan.com/address/${a.contractAddress}" target="_blank" style="color:#3498db; text-decoration:underline;">
                     ${a.contractAddress}
                 </a>
@@ -435,8 +430,8 @@ let financialInfo = '';
     } else {
         financialInfo = '<div class="info-item" style="color:#e67e22; margin-top:15px;">خزانه هوشمند هنوز راه‌اندازی نشده</div>';
     }
-
-    showInPanel(`
+						
+showInPanel(`
         <div class="project-info">
             <h3>${a['نام پروژه'] || 'بدون نام'}</h3>
             <div class="info-item"><span class="info-label">کد پروژه:</span><span class="info-value">${a['ProjectID']}</span></div>
@@ -453,7 +448,6 @@ let financialInfo = '';
         </div>
     `);
 
-    // بارگذاری خودکار لیست کمک‌کنندگان واقعی از PolygonScan
     if (a.contractAddress && a.contractAddress !== null && a.contractAddress !== "") {
         loadDonors(a.contractAddress);
     }
@@ -471,7 +465,7 @@ let financialInfo = '';
         .catch(err => {
             console.error("خطا در بارگذاری پروژه‌ها:", err);
         });
-
+	
 async function loadDonors(contractAddress) {
     const apiKey = "DYB75BHRNWEGAGAEH73AWJUPQ8EDRKN7RB"; // از https://polygonscan.com/myapikey رایگان بگیر
 	const clcTokenAddress = "0x39Af73d2736f6EC94778a38c0C7Ef800e58B13a7"; // توکن CLC تست
@@ -567,4 +561,5 @@ function zoomToIran() {
 </script>
 </body>
 </html>
+
 
