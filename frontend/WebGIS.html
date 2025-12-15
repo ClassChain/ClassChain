@@ -398,25 +398,62 @@ fetch('Projects.json')
                         if (selectedLayer) geo.resetStyle(selectedLayer);
                         if (selectedCountyLayer) countiesLayer?.resetStyle(selectedCountyLayer);
 
-                        // نمایش اطلاعات در پنل
-                        showInPanel(`
-                            <div class="project-info">
-                                <h3>${a['نام پروژه'] || 'بدون نام'}</h3>
-                                <div class="info-item"><span class="info-label">کد پروژه:</span><span class="info-value">${a['ProjectID']}</span></div>
-                                <div class="info-item"><span class="info-label">استان:</span><span class="info-value">${a['استان']}</span></div>
-                                <div class="info-item"><span class="info-label">منطقه:</span><span class="info-value">${a['منطقه']}</span></div>
-                                <div class="info-item"><span class="info-label">نوع پروژه:</span><span class="info-value">${a['نوع پروژه (نیاز)']}</span></div>
-                                <div class="info-item"><span class="info-label">تعداد کلاس:</span><span class="info-value">${a['تعداد کلاس'] || '—'}</span></div>
-                                <div class="info-item"><span class="info-label">زیربنا:</span><span class="info-value">${a['زیربنا'] ? Number(a['زیربنا']).toLocaleString('fa-IR') + ' م²' : '—'}</span></div>
-                                <div class="info-item"><span class="info-label">وضعیت:</span><span class="info-value">${a['وضعیت راهبری پروژه'] || '—'}</span></div>
-                                <div class="info-item"><span class="info-label">مسئول:</span><span class="info-value">${a['مسئول پروژه'] || '—'}</span></div>
-                                <div class="info-item"><span class="info-label">تلفن:</span><span class="info-value">${a['شماره تلفن مسئول پروژه'] || '—'}</span></div>
-                                ${a['آدرس پروژه'] ? `<div class="info-item"><span class="info-label">آدرس:</span><span class="info-value">${a['آدرس پروژه']}</span></div>` : ''}
-                            </div>
-                        `);
+let financialInfo = '';
 
-                        map.setView([y, x], 14, { animate: true });
-                    });
+    if (a.contractAddress && a.contractAddress !== null && a.contractAddress !== "") {
+        financialInfo = `
+        <div class="info-item" style="background:rgba(46,204,113,0.2); padding:12px; border-radius:8px; margin-top:15px;">
+            <span class="info-label">خزانه هوشمند پروژه:</span><br>
+            <span class="info-value">
+                <a href="https://polygonscan.com/address/${a.contractAddress}" target="_blank" style="color:#3498db; text-decoration:underline;">
+                    ${a.contractAddress}
+                </a>
+            </span>
+        </div>
+
+        <div class="info-item" style="margin-top:15px;">
+            <span class="info-label">برآورد هزینه ساخت:</span>
+            <span class="info-value">${a['targetAmount(USDT)'] ? Number(a['targetAmount(USDT)']).toLocaleString('fa-IR') + ' USDT' : 'نامشخص'}</span>
+        </div>
+
+        <div id="donorsList" style="margin-top:15px;">
+            <span class="info-label">در حال بارگذاری لیست کمک‌کنندگان...</span>
+        </div>
+
+        <div style="margin-top:20px; text-align:center;">
+            <button onclick="window.open('https://polygonscan.com/address/${a.contractAddress}#tokentxns', '_blank')" style="padding:12px 24px; background:#3498db; color:white; border:none; border-radius:8px; font-size:1.1em; cursor:pointer;">
+                الان در ساخت این مدرسه مشارکت می‌کنم
+            </button>
+        </div>
+        `;
+    } else {
+        financialInfo = '<div class="info-item" style="color:#e67e22; margin-top:15px;">خزانه هوشمند هنوز راه‌اندازی نشده</div>';
+    }
+
+    showInPanel(`
+        <div class="project-info">
+            <h3>${a['نام پروژه'] || 'بدون نام'}</h3>
+            <div class="info-item"><span class="info-label">کد پروژه:</span><span class="info-value">${a['ProjectID']}</span></div>
+            <div class="info-item"><span class="info-label">استان:</span><span class="info-value">${a['استان']}</span></div>
+            <div class="info-item"><span class="info-label">منطقه:</span><span class="info-value">${a['منطقه']}</span></div>
+            <div class="info-item"><span class="info-label">نوع پروژه:</span><span class="info-value">${a['نوع پروژه (نیاز)']}</span></div>
+            <div class="info-item"><span class="info-label">تعداد کلاس:</span><span class="info-value">${a['تعداد کلاس'] || '—'}</span></div>
+            <div class="info-item"><span class="info-label">زیربنا:</span><span class="info-value">${a['زیربنا'] ? Number(a['زیربنا']).toLocaleString('fa-IR') + ' م²' : '—'}</span></div>
+            <div class="info-item"><span class="info-label">وضعیت:</span><span class="info-value">${a['وضعیت راهبری پروژه'] || '—'}</span></div>
+            <div class="info-item"><span class="info-label">مسئول:</span><span class="info-value">${a['مسئول پروژه'] || '—'}</span></div>
+            <div class="info-item"><span class="info-label">تلفن:</span><span class="info-value">${a['شماره تلفن مسئول پروژه'] || '—'}</span></div>
+            ${a['آدرس پروژه'] ? `<div class="info-item"><span class="info-label">آدرس:</span><span class="info-value">${a['آدرس پروژه']}</span></div>` : ''}
+            ${financialInfo}
+        </div>
+    `);
+
+    // بارگذاری خودکار لیست کمک‌کنندگان واقعی از PolygonScan
+    if (a.contractAddress && a.contractAddress !== null && a.contractAddress !== "") {
+        loadDonors(a.contractAddress);
+    }
+
+    map.setView([y, x], 14, { animate: true });
+});
 
                     markersCluster.addLayer(marker);
                 }
@@ -428,7 +465,66 @@ fetch('Projects.json')
         .catch(err => {
             console.error("خطا در بارگذاری پروژه‌ها:", err);
         });
-    
+
+async function loadDonors(contractAddress) {
+    const apiKey = "DYB75BHRNWEGAGAEH73AWJUPQ8EDRKN7RB"; // از https://polygonscan.com/myapikey رایگان بگیر
+	const clcTokenAddress = "0x39Af73d2736f6EC94778a38c0C7Ef800e58B13a7"; // توکن CLC تست
+	const url = `https://api-amoy.polygonscan.com/api?module=account&action=tokentx&contractaddress=0x41e94eb019c0762f9bfcf9fb78e59bec0a32e187&address=${contractAddress}&sort=desc&apikey=${apiKey}`;
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.status === "1" && data.result.length > 0) {
+            let totalRaised = 0;
+            let donorsHtml = '<h4 style="color:#ecf0f1; margin:15px 0 10px;">کمک‌کنندگان</h4>';
+
+            const uniqueDonors = new Map(); // برای جمع زدن کمک‌های تکراری
+
+            data.result.forEach(tx => {
+                if (tx.to.toLowerCase() === contractAddress.toLowerCase()) {
+                    const amount = parseInt(tx.value) / 1e6; // USDT 6 اعشار
+                    totalRaised += amount;
+
+                    const from = tx.from;
+                    if (uniqueDonors.has(from)) {
+                        uniqueDonors.set(from, uniqueDonors.get(from) + amount);
+                    } else {
+                        uniqueDonors.set(from, amount);
+                    }
+                }
+            });
+
+            // نمایش جمع کل
+            document.querySelector('#donorsList').innerHTML = `
+                <div class="info-item">
+                    <span class="info-label">جمع کمک‌های دریافتی:</span>
+                    <span class="info-value">${totalRaised.toFixed(2)} USDT</span>
+                </div>
+            ` + donorsHtml;
+
+            // لیست کمک‌کنندگان
+            uniqueDonors.forEach((amount, address) => {
+                donorsHtml += `
+                <div class="info-item" style="font-size:0.9em; background:rgba(255,255,255,0.05); margin:5px 0; padding:8px; border-radius:6px;">
+                    <span class="info-value">
+                        <a href="https://polygonscan.com/address/${address}" target="_blank" style="color:#3498db;">
+                            ${address.substring(0,8)}...${address.substring(36)}
+                        </a>
+                    </span>
+                    <span class="info-label">${amount.toFixed(2)} USDT</span>
+                </div>
+                `;
+            });
+
+            document.querySelector('#donorsList').innerHTML += donorsHtml;
+        } else {
+            document.querySelector('#donorsList').innerHTML = '<p style="opacity:0.7;">هنوز کمکی ثبت نشده</p>';
+        }
+    } catch (err) {
+        document.querySelector('#donorsList').innerHTML = '<p style="color:#e74c3c;">خطا در بارگذاری کمک‌ها</p>';
+    }
+}
+
     // بازگشت به ایران
 function zoomToIran() {
         map.flyTo([32.4279, 53.6880], 5, { animate: true, duration: 1.5 });
@@ -465,6 +561,7 @@ function zoomToIran() {
 </script>
 </body>
 </html>
+
 
 
 
