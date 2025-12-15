@@ -264,7 +264,7 @@ const projectIcon = L.divIcon({
         spiderfyOnMaxZoom: true,
         showCoverageOnHover: false,
         zoomToBoundsOnClick: true,
-        maxClusterRadius: 30, // در زوم کم خوشه‌های بزرگ‌تر
+        maxClusterRadius: 60, // در زوم کم خوشه‌های بزرگ‌تر
         iconCreateFunction: function(cluster) {
             const count = cluster.getChildCount();
             let size = count < 10 ? 40 : count < 100 ? 50 : 60;
@@ -671,6 +671,7 @@ async function contributeToProject(contractAddress) {
 </script>
 </body>
 </html>
+
 
 
 
