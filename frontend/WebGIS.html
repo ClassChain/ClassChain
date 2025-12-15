@@ -73,7 +73,48 @@
         .panel-content::-webkit-scrollbar { width: 6px; }
         .panel-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 3px; }
         .panel-content::-webkit-scrollbar-thumb { background: #3498db; border-radius: 3px; }
+.panel-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    position: relative; /* برای موقعیت‌دهی دکمه ثابت */
+    padding-bottom: 90px; /* فضای کافی برای دکمه ثابت در پایین */
+}
 
+.fixed-contribute-button {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    text-align: center;
+    background: rgba(39, 174, 96, 0.95);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    backdrop-filter: blur(8px);
+    z-index: 10;
+}
+
+.fixed-contribute-button button {
+    padding: 12px 24px;
+    background: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    width: 100%;
+    max-width: 300px;
+}
+
+.fixed-contribute-button p {
+    margin-top: 8px;
+    font-size: 0.85em;
+    opacity: 0.8;
+}
+		
         .custom-basemap-selector, .home-button {
             position: absolute;
             z-index: 1000;
@@ -422,15 +463,13 @@ let financialInfo = '';
             <span class="info-label">در حال بارگذاری لیست کمک‌کنندگان...</span>
         </div>
 
-		<div style="margin-top:20px; text-align:center;">
-    		<button onclick="contributeToProject('${a.contractAddress}')" style="padding:12px 24px; background:#27ae60; color:white; border:none; border-radius:8px; font-size:1.1em; cursor:pointer;">
-		        الان در ساخت این مدرسه مشارکت می‌کنم
-    		</button>
-    		<p style="margin-top:10px; font-size:0.85em; opacity:0.8;">
-        		(اتصال به MetaMask و ارسال USDT در شبکه Polygon)
-    		</p>
-		</div>
-        `;
+<div class="fixed-contribute-button" id="fixedContributeBtn" style="display:none;">
+            <button onclick="contributeToProject('${a.contractAddress}')">
+                الان در ساخت این مدرسه مشارکت می‌کنم
+            </button>
+            <p>(اتصال به MetaMask و ارسال USDT در شبکه Polygon)</p>
+        </div>
+		`;
     } else {
         financialInfo = '<div class="info-item" style="color:#e67e22; margin-top:15px;">خزانه هوشمند هنوز راه‌اندازی نشده</div>';
     }
@@ -454,6 +493,7 @@ showInPanel(`
 
     if (a.contractAddress && a.contractAddress !== null && a.contractAddress !== "") {
         loadDonors(a.contractAddress);
+		document.getElementById('fixedContributeBtn').style.display = 'block';
     }
 
     map.setView([y, x], 14, { animate: true });
@@ -544,6 +584,8 @@ function zoomToIran() {
                 <p>روی استان، شهرستان یا پروژه کلیک کنید</p>
             </div>
         `);
+		const fixedBtn = document.getElementById('fixedContributeBtn');
+		if (fixedBtn) fixedBtn.style.display = 'none';
     }
     // لایه‌های پایه
     const basemapLayers = {
@@ -630,6 +672,7 @@ async function contributeToProject(contractAddress) {
 </script>
 </body>
 </html>
+
 
 
 
