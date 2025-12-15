@@ -183,49 +183,71 @@ async function createFund(projectId) {
     const newAddress = tx.events.SchoolFundCreated.returnValues.fundAddress;
 
     // لود JSON و آپدیت
-    const response = await fetch('Projects.json');
+    const response = await fetch('projects.json');
     const data = await response.json();
 
+    let found = false;
     data.features.forEach(feature => {
       if (feature.attributes.ProjectID === projectId) {
         feature.attributes.contractAddress = newAddress;
+        found = true;
       }
     });
 
-    // نمایش JSON آپدیت‌شده در textarea برای کپی
+    if (!found) {
+      alert("پروژه با این آیدی پیدا نشد!");
+      return;
+    }
+
+    // نمایش JSON آپدیت‌شده در یک div با textarea
     const updatedJson = JSON.stringify(data, null, 2);
-    const textarea = document.createElement('textarea');
-    textarea.value = updatedJson;
-    textarea.style.width = '100%';
-    textarea.style.height = '400px';
-    textarea.readOnly = true;
 
-    // پاک کردن محتوای قبلی اگر وجود داشت
-    const oldTextarea = document.getElementById('updatedJsonTextarea');
-    if (oldTextarea) oldTextarea.remove();
+    // ایجاد یا آپدیت div نتیجه
+    let resultDiv = document.getElementById('updateResult');
+    if (!resultDiv) {
+      resultDiv = document.createElement('div');
+      resultDiv.id = 'updateResult';
+      resultDiv.style.marginTop = '30px';
+      resultDiv.style.padding = '20px';
+      resultDiv.style.background = '#e8f5e8';
+      resultDiv.style.border = '2px solid #27ae60';
+      resultDiv.style.borderRadius = '10px';
+      document.body.appendChild(resultDiv);
+    }
 
-    const div = document.createElement('div');
-    div.innerHTML = `
+    resultDiv.innerHTML = `
       <h3 style="color:green;">خزانه با موفقیت ساخته شد!</h3>
-      <p><strong>آدرس خزانه:</strong> ${newAddress}</p>
-      <p>JSON آپدیت‌شده رو کپی کن و جایگزین فایل اصلی در GitHub کن:</p>
+      <p><strong>آیدی پروژه:</strong> ${projectId}</p>
+      <p><strong>آدرس خزانه جدید:</strong> <a href="https://amoy.polygonscan.com/address/${newAddress}" target="_blank">${newAddress}</a></p>
+      <p><strong>مراحل بعدی:</strong></p>
+      <ol>
+        <li>محتوای زیر رو انتخاب و کپی کن (Ctrl+A سپس Ctrl+C).</li>
+        <li>در GitHub فایل projects.json رو باز کن.</li>
+        <li>محتوای قدیمی رو پاک کن و این رو پیست کن.</li>
+        <li>commit بزن تا سایت آپدیت بشه.</li>
+      </ol>
+      <textarea id="updatedJsonText" style="width:100%; height:500px; font-family:monospace; font-size:14px;">${updatedJson}</textarea>
+      <button onclick="copyJson()" style="margin-top:10px; padding:10px 20px; background:#3498db; color:white; border:none; border-radius:5px;">کپی JSON</button>
     `;
-    div.appendChild(textarea);
-    div.id = 'updatedJsonTextarea';
 
-    document.body.appendChild(div);
-
-    // انتخاب خودکار متن برای کپی آسان
+    // فوکوس روی textarea و انتخاب خودکار
+    const textarea = document.getElementById('updatedJsonText');
+    textarea.focus();
     textarea.select();
-    document.execCommand('copy');
 
-    alert(`خزانه ساخته شد!\nآدرس: ${newAddress}\n\nJSON آپدیت‌شده کپی شد. حالا در GitHub جایگزین کن.`);
-
-    loadProjects();
+    loadProjects(); // رفرش لیست
   } catch (err) {
     console.error(err);
     alert("خطا در ساخت خزانه: " + (err.message || "نامشخص"));
   }
+}
+
+// تابع کپی
+function copyJson() {
+  const textarea = document.getElementById('updatedJsonText');
+  textarea.select();
+  document.execCommand('copy');
+  alert("JSON کپی شد!");
 }
     //async function createFund(projectId) {
     //  if (!confirm(`آیا مطمئنید می‌خواهید خزانه برای پروژه ${projectId} بسازید؟`)) return;
