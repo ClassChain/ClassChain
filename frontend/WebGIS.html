@@ -210,6 +210,34 @@ const map = L.map('map', {
         }
     }
 
+// تابع باز کردن کیف پول
+function openWalletForDonation() {
+    if (!currentContractAddress) {
+        alert("خزانه‌ای برای این پروژه وجود ندارد");
+        return;
+    }
+
+    if (!window.ethereum) {
+        alert("لطفاً MetaMask یا کیف پول سازگار نصب کنید!");
+        return;
+    }
+
+    // برای تست روی Amoy با توکن CLC
+    const tokenAddress = "0x39Af73d2736f6EC94778a38c0C7Ef800e58B13a7"; // CLC تست
+    // برای mainnet بعداً این رو به USDT تغییر بده: 0xc2132D05D31c914a87C6611c10748AEb04B58e8F
+
+    const deepLink = `https://metamask.app.link/send/${tokenAddress}@80002?address=${currentContractAddress}`;
+
+    window.open(deepLink, '_blank');
+}
+
+// تابع نمایش/مخفی کردن دکمه
+function toggleDonateButton(show) {
+    const btn = document.getElementById('participateBtn');
+    if (btn) {
+        btn.style.display = show ? 'block' : 'none';
+    }
+}
     // تابع باز کردن کیف پول (MetaMask یا هر والت دیگری)
     async function openWallet() {
         if (!currentContractAddress) return;
@@ -508,7 +536,7 @@ const map = L.map('map', {
                             financialInfo = '<div class="info-item" style="color:#e67e22; margin-top:15px;">خزانه هوشمند هنوز راه‌اندازی نشده</div>';
                             toggleDonateButton(false);
                         }
-
+						toggleDonateButton(currentContractAddress && currentContractAddress !== "" && currentContractAddress !== null);
                         showInPanel(`
                             <div class="project-info">
                                 <h3>${a['نام پروژه'] || 'بدون نام'}</h3>
@@ -636,5 +664,11 @@ const map = L.map('map', {
         currentBasemap.addTo(map);
     }
 </script>
+
+<!-- دکمه ثابت مشارکت -->
+<button id="participateBtn" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#27ae60; color:white; padding:14px 32px; font-size:1.2em; border:none; border-radius:50px; box-shadow:0 8px 25px rgba(0,0,0,0.3); cursor:pointer; z-index:1000; transition:all 0.3s;" onclick="openWalletForDonation()">
+    الان در ساخت این مدرسه مشارکت می‌کنم
+</button>
 </body>
 </html>
+
