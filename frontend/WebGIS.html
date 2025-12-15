@@ -402,7 +402,7 @@ fetch('Projects.json')
                         showInPanel(`
                             <div class="project-info">
                                 <h3>${a['نام پروژه'] || 'بدون نام'}</h3>
-                                <div class="info-item"><span class="info-label">کد پروژه:</span><span class="info-value">${a['کد پروژه']}</span></div>
+                                <div class="info-item"><span class="info-label">کد پروژه:</span><span class="info-value">${a['ProjectID']}</span></div>
                                 <div class="info-item"><span class="info-label">استان:</span><span class="info-value">${a['استان']}</span></div>
                                 <div class="info-item"><span class="info-label">منطقه:</span><span class="info-value">${a['منطقه']}</span></div>
                                 <div class="info-item"><span class="info-label">نوع پروژه:</span><span class="info-value">${a['نوع پروژه (نیاز)']}</span></div>
@@ -465,5 +465,6 @@ function zoomToIran() {
 </script>
 </body>
 </html>
+
 
 
