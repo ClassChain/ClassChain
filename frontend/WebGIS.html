@@ -443,54 +443,53 @@ fetch('Projects.json')
 
 let financialInfo = '';
 
-    if (a.contractAddress && a.contractAddress !== null && a.contractAddress !== "") {
-        financialInfo = `
-        <div class="info-item" style="background:rgba(46,204,113,0.2); padding:12px; border-radius:8px; margin-top:15px;">
-            <span class="info-label">خزانه هوشمند پروژه:</span><br>
-            <span class="info-value contract-address">
-                <a href="https://polygonscan.com/address/${a.contractAddress}" target="_blank" style="color:#3498db; text-decoration:underline;">
-                    ${a.contractAddress}
-                </a>
-            </span>
-        </div>
+if (a.contractAddress && a.contractAddress !== null && a.contractAddress !== "") {
+    financialInfo = `
+    <div class="info-item" style="background:rgba(46,204,113,0.2); padding:12px; border-radius:8px; margin-top:15px;">
+        <span class="info-label">خزانه هوشمند پروژه:</span><br>
+        <span class="info-value contract-address">
+            <a href="https://polygonscan.com/address/${a.contractAddress}" target="_blank" style="color:#3498db; text-decoration:underline;">
+                ${a.contractAddress}
+            </a>
+        </span>
+    </div>
 
-        <div class="info-item" style="margin-top:15px;">
-            <span class="info-label">برآورد هزینه ساخت:</span>
-            <span class="info-value">${a['targetAmount(USDT)'] ? Number(a['targetAmount(USDT)']).toLocaleString('fa-IR') + ' USDT' : 'نامشخص'}</span>
-        </div>
+    <div class="info-item" style="margin-top:15px;">
+        <span class="info-label">برآورد هزینه ساخت:</span>
+        <span class="info-value">${a['targetAmount(USDT)'] ? Number(a['targetAmount(USDT)']).toLocaleString('fa-IR') + ' USDT' : 'نامشخص'}</span>
+    </div>
 
-        <div id="donorsList" style="margin-top:15px;">
-            <span class="info-label">در حال بارگذاری لیست کمک‌کنندگان...</span>
-        </div>
-
-<div class="fixed-contribute-button" id="fixedContributeBtn" style="display:none;">
-            <button onclick="contributeToProject('${a.contractAddress}')">
-                الان در ساخت این مدرسه مشارکت می‌کنم
-            </button>
-            <p>(اتصال به MetaMask و ارسال USDT در شبکه Polygon)</p>
-        </div>
-		`;
-    } else {
-        financialInfo = '<div class="info-item" style="color:#e67e22; margin-top:15px;">خزانه هوشمند هنوز راه‌اندازی نشده</div>';
-    }
+    <div id="donorsList" style="margin-top:15px;">
+        <span class="info-label">در حال بارگذاری لیست کمک‌کنندگان...</span>
+    </div>
+    `;
+} else {
+    financialInfo = '<div class="info-item" style="color:#e67e22; margin-top:15px;">خزانه هوشمند هنوز راه‌اندازی نشده</div>';
+}
 						
 showInPanel(`
-        <div class="project-info">
-            <h3>${a['نام پروژه'] || 'بدون نام'}</h3>
-            <div class="info-item"><span class="info-label">کد پروژه:</span><span class="info-value">${a['ProjectID']}</span></div>
-            <div class="info-item"><span class="info-label">استان:</span><span class="info-value">${a['استان']}</span></div>
-            <div class="info-item"><span class="info-label">منطقه:</span><span class="info-value">${a['منطقه']}</span></div>
-            <div class="info-item"><span class="info-label">نوع پروژه:</span><span class="info-value">${a['نوع پروژه (نیاز)']}</span></div>
-            <div class="info-item"><span class="info-label">تعداد کلاس:</span><span class="info-value">${a['تعداد کلاس'] || '—'}</span></div>
-            <div class="info-item"><span class="info-label">زیربنا:</span><span class="info-value">${a['زیربنا'] ? Number(a['زیربنا']).toLocaleString('fa-IR') + ' م²' : '—'}</span></div>
-            <div class="info-item"><span class="info-label">وضعیت:</span><span class="info-value">${a['وضعیت راهبری پروژه'] || '—'}</span></div>
-            <div class="info-item"><span class="info-label">مسئول:</span><span class="info-value">${a['مسئول پروژه'] || '—'}</span></div>
-            <div class="info-item"><span class="info-label">تلفن:</span><span class="info-value">${a['شماره تلفن مسئول پروژه'] || '—'}</span></div>
-            ${a['آدرس پروژه'] ? `<div class="info-item"><span class="info-label">آدرس:</span><span class="info-value">${a['آدرس پروژه']}</span></div>` : ''}
-            ${financialInfo}
-        </div>
-    `);
+    <div class="project-info">
+        <h3>${a['نام پروژه'] || 'بدون نام'}</h3>
+        <div class="info-item"><span class="info-label">کد پروژه:</span><span class="info-value">${a['ProjectID']}</span></div>
+        <div class="info-item"><span class="info-label">استان:</span><span class="info-value">${a['استان']}</span></div>
+        <div class="info-item"><span class="info-label">منطقه:</span><span class="info-value">${a['منطقه']}</span></div>
+        <div class="info-item"><span class="info-label">نوع پروژه:</span><span class="info-value">${a['نوع پروژه (نیاز)']}</span></div>
+        <div class="info-item"><span class="info-label">تعداد کلاس:</span><span class="info-value">${a['تعداد کلاس'] || '—'}</span></div>
+        <div class="info-item"><span class="info-label">زیربنا:</span><span class="info-value">${a['زیربنا'] ? Number(a['زیربنا']).toLocaleString('fa-IR') + ' م²' : '—'}</span></div>
+        <div class="info-item"><span class="info-label">وضعیت:</span><span class="info-value">${a['وضعیت راهبری پروژه'] || '—'}</span></div>
+        <div class="info-item"><span class="info-label">مسئول:</span><span class="info-value">${a['مسئول پروژه'] || '—'}</span></div>
+        <div class="info-item"><span class="info-label">تلفن:</span><span class="info-value">${a['شماره تلفن مسئول پروژه'] || '—'}</span></div>
+        ${a['آدرس پروژه'] ? `<div class="info-item"><span class="info-label">آدرس:</span><span class="info-value">${a['آدرس پروژه']}</span></div>` : ''}
+        ${financialInfo}
+    </div>
 
+    <div class="fixed-contribute-button" id="fixedContributeBtn" style="display: none;">
+        <button onclick="contributeToProject('${a.contractAddress}')">
+            الان در ساخت این مدرسه مشارکت می‌کنم
+        </button>
+        <p>(اتصال به MetaMask و ارسال USDT در شبکه Polygon)</p>
+    </div>
+`);
     if (a.contractAddress && a.contractAddress !== null && a.contractAddress !== "") {
         loadDonors(a.contractAddress);
 		document.getElementById('fixedContributeBtn').style.display = 'block';
@@ -672,6 +671,7 @@ async function contributeToProject(contractAddress) {
 </script>
 </body>
 </html>
+
 
 
 
