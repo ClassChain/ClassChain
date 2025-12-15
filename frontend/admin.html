@@ -192,20 +192,36 @@ async function createFund(projectId) {
       }
     });
 
-    // دانلود فایل آپدیت‌شده
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'updated_Projects.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    // نمایش JSON آپدیت‌شده در textarea برای کپی
+    const updatedJson = JSON.stringify(data, null, 2);
+    const textarea = document.createElement('textarea');
+    textarea.value = updatedJson;
+    textarea.style.width = '100%';
+    textarea.style.height = '400px';
+    textarea.readOnly = true;
 
-    alert(`خزانه ساخته شد!\nآدرس: ${newAddress}\n\nفایل updated_Projects.json دانلود شد. آن را جایگزین فایل اصلی در GitHub کن و commit بزن.`);
+    // پاک کردن محتوای قبلی اگر وجود داشت
+    const oldTextarea = document.getElementById('updatedJsonTextarea');
+    if (oldTextarea) oldTextarea.remove();
 
-    loadProjects(); // رفرش لیست
+    const div = document.createElement('div');
+    div.innerHTML = `
+      <h3 style="color:green;">خزانه با موفقیت ساخته شد!</h3>
+      <p><strong>آدرس خزانه:</strong> ${newAddress}</p>
+      <p>JSON آپدیت‌شده رو کپی کن و جایگزین فایل اصلی در GitHub کن:</p>
+    `;
+    div.appendChild(textarea);
+    div.id = 'updatedJsonTextarea';
+
+    document.body.appendChild(div);
+
+    // انتخاب خودکار متن برای کپی آسان
+    textarea.select();
+    document.execCommand('copy');
+
+    alert(`خزانه ساخته شد!\nآدرس: ${newAddress}\n\nJSON آپدیت‌شده کپی شد. حالا در GitHub جایگزین کن.`);
+
+    loadProjects();
   } catch (err) {
     console.error(err);
     alert("خطا در ساخت خزانه: " + (err.message || "نامشخص"));
