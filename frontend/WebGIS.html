@@ -9,16 +9,28 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; height: 100vh; overflow: hidden; }
         .container { display: flex; height: 100vh; }
+
+		.info-panel {
+    		width: 350px;
+    		background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+    		color: white;
+    		display: flex;
+    		flex-direction: column;
+    		box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+    		z-index: 500;
+    		position: relative; /* ← اضافه شد */
+		}
+
         
-        .info-panel {
-            width: 350px;
-            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            box-shadow: -2px 0 10px rgba(0,0,0,0.3);
-            z-index: 500;
-        }
+        //.info-panel {
+        //    width: 350px;
+        //    background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+        //    color: white;
+        //    display: flex;
+        //    flex-direction: column;
+        //    box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+        //    z-index: 500;
+        //}
         .panel-header {
             background: rgba(0,0,0,0.3);
             padding: 20px;
@@ -35,6 +47,7 @@
             margin-bottom: 15px;
             border-right: 4px solid #3498db;
         }
+		
         .province-info h3, .project-info h3 {
             color: #ecf0f1;
             margin-bottom: 10px;
@@ -80,21 +93,37 @@
     position: relative;  /* حذف display: flex و flex-direction چون لازم نیست و ممکنه تداخل ایجاد کنه */
     box-sizing: border-box;
 }
+		.fixed-contribute-button {
+    		position: absolute;          /* نسبت به info-panel */
+    		bottom: 15px;
+    		left: 15px;
+    		right: 15px;
+    		text-align: center;
+    		background: rgba(39, 174, 96, 0.98);
+    		padding: 18px 15px;
+    		border-radius: 12px;
+    		box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    		backdrop-filter: blur(12px);
+    		z-index: 20;
+    		border: 1px solid rgba(255,255,255,0.15);
+    		display: none;               /* ← اضافه شد */
+		}
+
 		
-.fixed-contribute-button {
-    position: absolute;
-    bottom: 10px;  /* کمی بالاتر از پایین تا زیبا تر بشه */
-    left: 15px;
-    right: 15px;
-    text-align: center;
-    background: rgba(39, 174, 96, 0.98);
-    padding: 18px 15px;
-    border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-    backdrop-filter: blur(12px);
-    z-index: 20;  /* z-index بالاتر تا مطمئن بشیم روی همه چیز باشه */
-    border: 1px solid rgba(255,255,255,0.15);
-}
+//.fixed-contribute-button {
+//    position: absolute;
+//	bottom: 10px;  /* کمی بالاتر از پایین تا زیبا تر بشه */
+//    left: 15px;
+//    right: 15px;
+//    text-align: center;
+//    background: rgba(39, 174, 96, 0.98);
+//    padding: 18px 15px;
+//    border-radius: 12px;
+//    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+//    backdrop-filter: blur(12px);
+//    z-index: 20;  /* z-index بالاتر تا مطمئن بشیم روی همه چیز باشه */
+//    border: 1px solid rgba(255,255,255,0.15);
+//}
 		
 .fixed-contribute-button button {
     padding: 14px 28px;
@@ -172,11 +201,17 @@
             <p>رنگ بر اساس سرانه جمعیت + پروژه‌های آموزشی</p>
         </div>
         <div class="panel-content" id="infoPanel">
+			<div class="fixed-contribute-button" id="fixedContributeBtn">
+    			<button onclick="contributeToProject(currentContractAddress)">
+			        الان در ساخت این مدرسه مشارکت می‌کنم
+    			</button>
+    			<p>(اتصال به MetaMask و ارسال USDT در شبکه Polygon)</p>
+			</div>
             <div class="no-selection">
-                <div class="icon">Map</div>
-                <h3>یک مورد را انتخاب کنید</h3>
-                <p>روی استان، شهرستان یا پروژه کلیک کنید</p>
-            </div>
+            	<div class="icon">Map</div>
+            	<h3>یک مورد را انتخاب کنید</h3>
+            	<p>روی استان، شهرستان یا پروژه کلیک کنید</p>
+           	</div>
         </div>
     </div>
     <div id="map"></div>
@@ -197,7 +232,9 @@
         <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
     </svg>
 </div>
-
+	
+let currentContractAddress = null;
+	
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
@@ -492,17 +529,26 @@ showInPanel(`
         ${financialInfo}
     </div>
 
-    <div class="fixed-contribute-button" id="fixedContributeBtn" style="display: none;">
-        <button onclick="contributeToProject('${a.contractAddress}')">
-            الان در ساخت این مدرسه مشارکت می‌کنم
-        </button>
-        <p>(اتصال به MetaMask و ارسال USDT در شبکه Polygon)</p>
-    </div>
+    //<div class="fixed-contribute-button" id="fixedContributeBtn" style="display: none;">
+    //    <button onclick="contributeToProject('${a.contractAddress}')">
+    //        الان در ساخت این مدرسه مشارکت می‌کنم
+    //    </button>
+    //    <p>(اتصال به MetaMask و ارسال USDT در شبکه Polygon)</p>
+    //</div>
 `);
-    if (a.contractAddress && a.contractAddress !== null && a.contractAddress !== "") {
-        loadDonors(a.contractAddress);
-		document.getElementById('fixedContributeBtn').style.display = 'block';
-    }
+if (a.contractAddress && a.contractAddress !== null && a.contractAddress !== "") {
+    currentContractAddress = a.contractAddress;
+    loadDonors(a.contractAddress);
+    document.getElementById('fixedContributeBtn').style.display = 'block';
+} else {
+    currentContractAddress = null;
+    document.getElementById('fixedContributeBtn').style.display = 'none';
+}
+
+    //if (a.contractAddress && a.contractAddress !== null && a.contractAddress !== "") {
+    //    loadDonors(a.contractAddress);
+	//	document.getElementById('fixedContributeBtn').style.display = 'block';
+    //}
 
     map.setView([y, x], 14, { animate: true });
 });
@@ -594,6 +640,10 @@ function zoomToIran() {
         `);
 		const fixedBtn = document.getElementById('fixedContributeBtn');
 		if (fixedBtn) fixedBtn.style.display = 'none';
+		currentContractAddress = null;
+
+	//	const fixedBtn = document.getElementById('fixedContributeBtn');
+	//	if (fixedBtn) fixedBtn.style.display = 'none';
     }
     // لایه‌های پایه
     const basemapLayers = {
@@ -680,6 +730,7 @@ async function contributeToProject(contractAddress) {
 </script>
 </body>
 </html>
+
 
 
 
