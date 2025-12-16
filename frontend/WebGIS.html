@@ -19,6 +19,7 @@
     		box-shadow: -2px 0 10px rgba(0,0,0,0.3);
     		z-index: 500;
     		position: relative; /* ← اضافه شد */
+			height: 100%; /* مطمئن شو که این وجود داره */
 		}
         .panel-header {
             background: rgba(0,0,0,0.3);
@@ -77,7 +78,7 @@
         .panel-content::-webkit-scrollbar-thumb { background: #3498db; border-radius: 3px; }
 .panel-content {
     flex: 1;
-    padding: 20px 20px 140px 20px;  /* پایین رو بیشتر کردیم تا فضای کافی برای دکمه + حاشیه باشه */
+    padding: 20px /* 20px 140px 20px;  /* پایین رو بیشتر کردیم تا فضای کافی برای دکمه + حاشیه باشه */
     overflow-y: auto;
     position: relative;  /* حذف display: flex و flex-direction چون لازم نیست و ممکنه تداخل ایجاد کنه */
     box-sizing: border-box;
@@ -701,5 +702,6 @@ async function contributeToProject(contractAddress) {
 </script>
 </body>
 </html>
+
 
 
