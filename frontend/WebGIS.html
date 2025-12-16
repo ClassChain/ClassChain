@@ -363,7 +363,7 @@ const projectIcon = L.divIcon({
                         style: feature => {
                             const c = feature.properties.C_capita || 0;
                             return {
-                                color: c === 0 ? "#555555" : "#880e4f",
+                                color: c === 0 ? "#555555" : "#2c3e50",
                                 weight: c === 0 ? 2.5 : 1.5,
                                 fillColor: getCountyColor(c, minCapita, maxCapita),
                                 fillOpacity: c === 0 ? 0.9 : 0.75
@@ -676,6 +676,7 @@ async function contributeToProject(contractAddress) {
 </script>
 </body>
 </html>
+
 
 
 
