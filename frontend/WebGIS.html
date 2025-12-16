@@ -22,15 +22,15 @@
 		}
 
         
-        //.info-panel {
-        //    width: 350px;
-        //    background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
-        //    color: white;
-        //    display: flex;
-        //    flex-direction: column;
-        //    box-shadow: -2px 0 10px rgba(0,0,0,0.3);
-        //    z-index: 500;
-        //}
+        /* .info-panel { */
+        /*    width: 350px; */
+        /*    background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%); */
+        /*    color: white; */
+        /*    display: flex; */
+        /*    flex-direction: column; */
+        /*    box-shadow: -2px 0 10px rgba(0,0,0,0.3); */
+        /*    z-index: 500; */
+        /* } */
         .panel-header {
             background: rgba(0,0,0,0.3);
             padding: 20px;
@@ -110,20 +110,20 @@
 		}
 
 		
-//.fixed-contribute-button {
-//    position: absolute;
-//	bottom: 10px;  /* کمی بالاتر از پایین تا زیبا تر بشه */
-//    left: 15px;
-//    right: 15px;
-//    text-align: center;
-//    background: rgba(39, 174, 96, 0.98);
-//    padding: 18px 15px;
-//    border-radius: 12px;
-//    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-//    backdrop-filter: blur(12px);
-//    z-index: 20;  /* z-index بالاتر تا مطمئن بشیم روی همه چیز باشه */
-//    border: 1px solid rgba(255,255,255,0.15);
-//}
+/*.fixed-contribute-button { */
+/*    position: absolute;
+/*	bottom: 10px; */  /* کمی بالاتر از پایین تا زیبا تر بشه */
+/*    left: 15px; */
+/*    right: 15px; */
+/*    text-align: center; */
+/*    background: rgba(39, 174, 96, 0.98); */
+/*    padding: 18px 15px; */
+/*    border-radius: 12px; */
+/*    box-shadow: 0 8px 30px rgba(0,0,0,0.5); */
+/*    backdrop-filter: blur(12px); */
+/*    z-index: 20; */  /* z-index بالاتر تا مطمئن بشیم روی همه چیز باشه */
+/*    border: 1px solid rgba(255,255,255,0.15); */
+/*} */
 		
 .fixed-contribute-button button {
     padding: 14px 28px;
@@ -233,14 +233,13 @@
     </svg>
 </div>
 	
-let currentContractAddress = null;
-	
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
 
 <script>
+let currentContractAddress = null;
 const map = L.map('map', {
         renderer: L.canvas()
     }).setView([32.4279, 53.6880], 5);
@@ -730,6 +729,7 @@ async function contributeToProject(contractAddress) {
 </script>
 </body>
 </html>
+
 
 
 
