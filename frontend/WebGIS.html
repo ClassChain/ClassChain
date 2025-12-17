@@ -176,7 +176,7 @@
         	<div class="panel-content" id="infoPanel">
 				<div class="fixed-contribute-button" id="fixedContributeBtn">
     				<button onclick="contributeToProject(currentContractAddress)">
-			    	    الان در ساخت این مدرسه مشارکت می‌کنم
+			    	    مشارکت در ساخت
     				</button>
     				<p>(اتصال به MetaMask و ارسال USDT در شبکه Polygon)</p>
 				</div>
@@ -463,10 +463,6 @@ fetch('data/Projects.json')
 						if (selectedCountyLayer) {
 						    selectedCountyLayer.setStyle({ fillOpacity: 0 });
 						}
-
-                        //if (selectedLayer) geo.resetStyle(selectedLayer);
-                        //if (selectedCountyLayer) countiesLayer?.resetStyle(selectedCountyLayer);
-
 let financialInfo = '';
 
 if (a.contractAddress && a.contractAddress !== null && a.contractAddress !== "") {
@@ -510,7 +506,7 @@ showInPanel(`
     </div>
     <div class="fixed-contribute-button" id="fixedContributeBtn" style="display: none;">
         <button onclick="contributeToProject('${a.contractAddress}')">
-            الان در ساخت این مدرسه مشارکت می‌کنم
+            مشارکت در ساخت
         </button>
         <p>(اتصال به MetaMask و ارسال USDT در شبکه Polygon)</p>
     </div>
