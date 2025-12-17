@@ -142,7 +142,7 @@ const factoryABI = [
     }
 
     async function loadProjects() {
-      const response = await fetch('Projects.json');
+      const response = await fetch('data/Projects.json');
       const data = await response.json();
       const tbody = document.querySelector('#projectsTable tbody');
       tbody.innerHTML = '';
@@ -249,21 +249,6 @@ function copyJson() {
   document.execCommand('copy');
   alert("JSON کپی شد!");
 }
-    //async function createFund(projectId) {
-    //  if (!confirm(`آیا مطمئنید می‌خواهید خزانه برای پروژه ${projectId} بسازید؟`)) return;
-
-    //  try {
-    //    const tx = await factory.methods.createSingleOwnerFund(projectId).send({ from: account });
-    //    const newAddress = tx.events.SchoolFundCreated.returnValues.fundAddress;
-
-    //    alert(`خزانه با موفقیت ساخته شد!\nآدرس: ${newAddress}\n\nاین آدرس را دستی در projects.json اضافه کنید و commit کنید.`);
-
-    //    loadProjects(); // رفرش لیست
-    //  } catch (err) {
-    //    console.error(err);
-    //    alert("خطا در ساخت خزانه: " + (err.message || "نامشخص"));
-    //  }
-    //}
   </script>
 </body>
 </html>
