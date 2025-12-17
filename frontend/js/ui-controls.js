@@ -1,31 +1,41 @@
-import { map, markersCluster } from './main.js';
-import { resetPanel } from './ui-controls.js'; // خودمرجع نیست، فقط برای استفاده داخلی اگر لازم شد
+// ui-controls.js - نسخه اصلاح‌شده و بدون خطا
 
-// تابع نمایش محتوای پنل
+export let currentContractAddress = null; // اگر در main.js تعریف شده، اینجا لازم نیست، اما برای ایمنی
+
+// نمایش محتوا در پنل اطلاعات
 export function showInPanel(html) {
     const panel = document.getElementById('infoPanel');
-    // پاک کردن محتوای قبلی و اضافه کردن محتوای جدید
-    panel.innerHTML = `
-        ${html}
-        <div class="fixed-contribute-button" id="fixedContributeBtn" style="display: none;">
+    if (!panel) return;
+
+    panel.innerHTML = html;
+
+    // مطمئن شو دکمه مشارکت وجود داره (اگر قبلاً حذف شده باشه)
+    let contributeBtn = document.getElementById('fixedContributeBtn');
+    if (!contributeBtn) {
+        contributeBtn = document.createElement('div');
+        contributeBtn.id = 'fixedContributeBtn';
+        contributeBtn.className = 'fixed-contribute-button';
+        contributeBtn.innerHTML = `
             <button id="contributeButton">الان در ساخت این مدرسه مشارکت می‌کنم</button>
             <p>(اتصال به MetaMask و ارسال USDT در شبکه Polygon)</p>
-        </div>
-    `;
+        `;
+        panel.appendChild(contributeBtn);
+    }
 }
 
-// مخفی و نمایش دکمه مشارکت
+// مخفی کردن دکمه مشارکت
 export function hideContributeButton() {
     const btn = document.getElementById('fixedContributeBtn');
     if (btn) btn.style.display = 'none';
 }
 
+// نمایش دکمه مشارکت
 export function showContributeButton() {
     const btn = document.getElementById('fixedContributeBtn');
     if (btn) btn.style.display = 'block';
 }
 
-// پنل پیش‌فرض
+// وضعیت پیش‌فرض پنل
 export function resetPanel() {
     showInPanel(`
         <div class="no-selection">
@@ -50,20 +60,23 @@ export function setupBasemaps(map) {
     let currentBasemap = basemaps.carto;
     currentBasemap.addTo(map);
 
-    document.getElementById('basemapSelect').addEventListener('change', (e) => {
-        map.removeLayer(currentBasemap);
-        currentBasemap = basemaps[e.target.value];
-        currentBasemap.addTo(map);
-    });
+    const select = document.getElementById('basemapSelect');
+    if (select) {
+        select.addEventListener('change', (e) => {
+            map.removeLayer(currentBasemap);
+            currentBasemap = basemaps[e.target.value];
+            currentBasemap.addTo(map);
+        });
+    }
 }
 
 // راه‌اندازی دکمه بازگشت به ایران
 export function setupHomeButton(map) {
-    document.getElementById('homeButton').addEventListener('click', () => {
-        map.flyTo([32.4279, 53.6880], 5, { animate: true, duration: 1.5 });
-        resetPanel();
-
-        // اگر لایه شهرستان یا انتخاب قبلی بود، ریست کن (اختیاری)
-        // countiesLayer?.remove();
-    });
+    const homeBtn = document.getElementById('homeButton');
+    if (homeBtn) {
+        homeBtn.addEventListener('click', () => {
+            map.flyTo([32.4279, 53.6880], 5, { animate: true, duration: 1.5 });
+            resetPanel();
+        });
+    }
 }
