@@ -9,17 +9,17 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; height: 100vh; overflow: hidden; }
         .container { display: flex; height: 100vh; }
-        
-        .info-panel {
-            width: 350px;
-            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            box-shadow: -2px 0 10px rgba(0,0,0,0.3);
-            z-index: 500;
-            position: relative;
-            height: 100%;
+
+		.info-panel {
+    		width: 350px;
+    		background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+    		color: white;
+    		display: flex;
+    		flex-direction: column;
+    		box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+    		z-index: 500;
+    		position: relative; /* ← اضافه شد */
+			height: 100%; /* مطمئن شو که این وجود داره */
 		}
         .panel-header {
             background: rgba(0,0,0,0.3);
@@ -29,12 +29,9 @@
         }
         .panel-header h1 { font-size: 1.4em; margin-bottom: 5px; color: #ecf0f1; }
         .panel-header p { opacity: 0.9; font-size: 0.9em; color: #bdc3c7; }
+		
+        .panel-content { flex: 1; padding: 20px; overflow-y: auto; }
 
-        .panel-content { 
-            flex: 1; 
-            padding: 20px; 
-            overflow-y: auto; 
-        }
         /* استایل جدید برای بخش‌های آبشاری (Accordion) */
         .accordion-section {
             background: rgba(255,255,255,0.1);
@@ -72,6 +69,7 @@
             display: none;
         }
 
+
         .province-info, .project-info {
             background: rgba(255,255,255,0.1);
             border-radius: 8px;
@@ -79,6 +77,7 @@
             margin-bottom: 15px;
             border-right: 4px solid #3498db;
         }
+		
         .province-info h3, .project-info h3 {
             color: #ecf0f1;
             margin-bottom: 10px;
@@ -117,16 +116,15 @@
         .panel-content::-webkit-scrollbar { width: 6px; }
         .panel-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 3px; }
         .panel-content::-webkit-scrollbar-thumb { background: #3498db; border-radius: 3px; }
-.panel-content {
-    flex: 1;
-    padding: 20px 20px 140px 20px;  /* پایین رو بیشتر کردیم تا فضای کافی برای دکمه + حاشیه باشه */
-    overflow-y: auto;
-    position: relative;  /* حذف display: flex و flex-direction چون لازم نیست و ممکنه تداخل ایجاد کنه */
-    box-sizing: border-box;
-}
+		.panel-content {
+    		flex: 1 1 Auto;
+    		padding: 20px /* 20px 140px 20px;  /* پایین رو بیشتر کردیم تا فضای کافی برای دکمه + حاشیه باشه */
+    		overflow-y: auto;
+			padding: 20px;
+		}
 		.fixed-contribute-button {
     		position: sticky;          /* نسبت به info-panel */
-    		bottom: 1px;
+    		bottom: 15px;
     		left: 15px;
     		right: 15px;
     		text-align: center;
@@ -140,31 +138,42 @@
     		display: none;               /* ← اضافه شد */
 		}
 		
-.fixed-contribute-button button {
-    padding: 14px 28px;
-    background: #27ae60;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 1.15em;
-    font-weight: bold;
-    cursor: pointer;
-    width: 100%;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    transition: transform 0.2s ease;
-}
+		.fixed-contribute-button button {
+    		padding: 14px 28px;
+    		background: #27ae60;
+    		color: white;
+    		border: none;
+    		border-radius: 10px;
+    		font-size: 1.15em;
+    		font-weight: bold;
+    		cursor: pointer;
+    		width: 100%;
+    		box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    		transition: transform 0.2s ease;
+		}
 		
-.fixed-contribute-button button:hover {
-    transform: translateY(-2px);
-}
+		.fixed-contribute-button button:hover {
+    		transform: translateY(-2px);
+		}
 
-.fixed-contribute-button p {
-    margin-top: 10px;
-    font-size: 0.9em;
-    opacity: 0.9;
-}
+		.fixed-contribute-button p {
+    		margin-top: 10px;
+    		font-size: 0.9em;
+    		opacity: 0.9;
+		}
 		
-        .custom-basemap-selector, .home-button {
+         .report-link {
+            display: block;
+            padding: 8px 0;
+            color: #3498db;
+            text-decoration: underline;
+            font-size: 0.95em;
+        }
+        .report-link:hover {
+            color: #5ab9ea;
+        }
+
+       .custom-basemap-selector, .home-button {
             position: absolute;
             z-index: 1000;
             background: rgba(255,255,255,0.95);
@@ -209,45 +218,45 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="info-panel">
-            <div class="panel-header">
-                <h1>WebGIS ایران</h1>
-                <p>رنگ بر اساس سرانه جمعیت + پروژه‌های آموزشی</p>
-            </div>
-            <div class="panel-content" id="infoPanel">
-                <div class="fixed-contribute-button" id="fixedContributeBtn">
-                    <button onclick="contributeToProject(currentContractAddress)">
-                        مشارکت در ساخت
-                    </button>
-                    <p>(اتصال به MetaMask و ارسال USDT در شبکه Polygon)</p>
-                </div>
-                <div class="no-selection">
-                    <div class="icon">Map</div>
-                    <h3>یک مورد را انتخاب کنید</h3>
-                    <p>روی استان، شهرستان یا پروژه کلیک کنید</p>
-                </div>
-            </div>
-        </div>
-        <div id="map"></div>
-    </div>
+	<div class="container">
+    	<div class="info-panel">
+        	<div class="panel-header">
+            	<h1>WebGIS ایران</h1>
+            	<p>رنگ بر اساس سرانه جمعیت + پروژه‌های آموزشی</p>
+        	</div>
+        	<div class="panel-content" id="infoPanel">
+				<div class="fixed-contribute-button" id="fixedContributeBtn">
+    				<button onclick="contributeToProject(currentContractAddress)">
+			    	    مشارکت در ساخت
+    				</button>
+    				<p>(اتصال به MetaMask و ارسال USDT در شبکه Polygon)</p>
+				</div>
+            	<div class="no-selection">
+            		<div class="icon">Map</div>
+            		<h3>یک مورد را انتخاب کنید</h3>
+            		<p>روی استان، شهرستان یا پروژه کلیک کنید</p>
+           		</div>
+        	</div>
+    	</div>
+    	<div id="map"></div>
+	</div>
 
-<div class="custom-basemap-selector">
-    <select id="basemapSelect" onchange="changeBasemap(this.value)">
-        <option value="carto">رنگارنگ و سریع (پیش‌فرض)</option>
-        <option value="persiangis">نقشه فارسی (PersianGIS)</option>
-        <option value="satellite">ماهواره‌ای (Esri)</option>
-        <option value="light">خاکستری روشن</option>
-        <option value="osm">استاندارد (OSM)</option>
-    </select>
-</div>
+	<div class="custom-basemap-selector">
+    	<select id="basemapSelect" onchange="changeBasemap(this.value)">
+        	<option value="carto">رنگارنگ و سریع (پیش‌فرض)</option>
+        	<option value="persiangis">نقشه فارسی (PersianGIS)</option>
+        	<option value="satellite">ماهواره‌ای (Esri)</option>
+        	<option value="light">خاکستری روشن</option>
+        	<option value="osm">استاندارد (OSM)</option>
+    	</select>
+	</div>
 
-<div class="home-button" onclick="zoomToIran()" title="بازگشت به ایران">
-    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-    </svg>
-</div>
-
+	<div class="home-button" onclick="zoomToIran()" title="بازگشت به ایران">
+    	<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+        	<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+    	</svg>
+	</div>
+	
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
@@ -268,6 +277,13 @@ const map = L.map('map', {
     function showInPanel(content) {
         document.getElementById('infoPanel').innerHTML = content;
     }
+	
+// توابع کلیک روی عنوان برای باز/بسته کردن بخش
+function toggleAccordion(element) {
+    element.classList.toggle('collapsed');
+    const content = element.nextElementSibling;
+    content.classList.toggle('collapsed');
+}
     // رنگ استان‌ها
     function getProvinceColor(capita, min, max) {
         if (capita === 0 || capita == null) return '#34495e';
@@ -414,7 +430,7 @@ const projectIcon = L.divIcon({
                         style: feature => {
                             const c = feature.properties.C_capita || 0;
                             return {
-                                color: c === 0 ? "#555555" : "#880e4f",
+                                color: c === 0 ? "#555555" : "#2c3e50",
                                 weight: c === 0 ? 2.5 : 1.5,
                                 fillColor: getCountyColor(c, minCapita, maxCapita),
                                 fillOpacity: c === 0 ? 0.9 : 0.75
@@ -428,7 +444,11 @@ const projectIcon = L.divIcon({
                                 if (selectedCountyLayer && selectedCountyLayer !== layer) countiesLayer.resetStyle(selectedCountyLayer);
                                 if (selectedProjectMarker) selectedProjectMarker.setIcon(normalIcon);
 
-                                layer.setStyle({ weight: 6, color: "#c62828", fillOpacity: 0.9 });
+                                //layer.setStyle({ weight: 6, color: "#c62828", fillOpacity: 0.9 });
+                                layer.setStyle({ weight: 6, color: "#c62828", fill:false });
+								if (selectedLayer) {
+    								selectedLayer.setStyle({ fillOpacity: 0 });
+								}
                                 selectedCountyLayer = layer;
                                 layer.bringToFront();
                                 map.fitBounds(layer.getBounds(), { padding: [30, 30], animate: true, duration: 1 });
@@ -503,6 +523,8 @@ fetch('data/Projects.json')
 
                     if (a.contractAddress && a.contractAddress !== null && a.contractAddress !== "") {
                         financialInfo = `
+
+
                         <div class="info-item" style="background:rgba(46,204,113,0.2); padding:12px; border-radius:8px; margin-top:15px;">
                             <span class="info-label">خزانه هوشمند پروژه:</span><br>
                             <span class="info-value contract-address">
@@ -665,6 +687,7 @@ function zoomToIran() {
         `);
 		const fixedBtn = document.getElementById('fixedContributeBtn');
 		if (fixedBtn) fixedBtn.style.display = 'none';
+		currentContractAddress = null;
     }
     // لایه‌های پایه
     const basemapLayers = {
@@ -685,6 +708,8 @@ function zoomToIran() {
     }
 
 async function contributeToProject(contractAddress) {
+    if (!contractAddress) return;
+	
     if (typeof window.ethereum === 'undefined') {
         alert('لطفاً افزونه MetaMask را نصب کنید یا از مرورگر سازگار با Web3 استفاده کنید.');
         window.open('https://metamask.io/download/', '_blank');
@@ -751,21 +776,3 @@ async function contributeToProject(contractAddress) {
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
