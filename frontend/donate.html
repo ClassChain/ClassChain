@@ -608,7 +608,8 @@
             let hasAnyNetwork = false;
             Object.keys(networks).forEach(key => {
                 const net = networks[key];
-                if (projectData[net.addressField] && projectData[net.addressField].trim() !== "") {
+                //if (projectData[net.addressField] && projectData[net.addressField].trim() !== "") {
+				if (true) {
                     const option = document.createElement('option');
                     option.value = key;
                     option.innerHTML = `<img src="${net.icon}" style="width:24px;height:24px;vertical-align:middle;margin-left:8px;"> ${net.name} (${net.tokenType})`;
