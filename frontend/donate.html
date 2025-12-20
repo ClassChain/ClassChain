@@ -571,21 +571,35 @@
                 document.getElementById('projectDesc').innerText = "لطفاً از نقشه پروژه‌ای را انتخاب کنید.";
                 return;
             }
+			
+    try {
+        // <<< مسیر مطلق تضمینی
+        const response = await fetch('data/Projects.json');
+        if (!response.ok) {
+            throw new Error(`خطا ${response.status}: فایل JSON لود نشد`);
+        }
+        const data = await response.json();
 
-            try {
-                const response = await fetch('./data/Projects.json');
-                if (!response.ok) throw new Error('فایل Projects.json یافت نشد');
-                const data = await response.json();
-                const feature = data.features.find(f => f.attributes.ProjectID === projectId);
+        const feature = data.features.find(f => f.attributes.ProjectID === projectId);
+        if (!feature) {
+            document.getElementById('projectName').innerText = "پروژه یافت نشد";
+            document.getElementById('projectDesc').innerText = "کد پروژه: " + projectId;
+            return;
+        }
+
+            //try {
+                //const response = await fetch('https://arashmardani.github.io/ClassChain/data/Projects.json');
+                //if (!response.ok) throw new Error('فایل Projects.json یافت نشد');
+                //const data = await response.json();
+                //const feature = data.features.find(f => f.attributes.ProjectID === projectId);
                 
-                if (!feature) {
-                    document.getElementById('projectName').innerText = "پروژه یافت نشد";
-                    document.getElementById('projectDesc').innerText = "کد پروژه: " + projectId;
-                    return;
-                }
+                //if (!feature) {
+                //    document.getElementById('projectName').innerText = "پروژه یافت نشد";
+                //    document.getElementById('projectDesc').innerText = "کد پروژه: " + projectId;
+                //    return;
+                //}
                 
                 projectData = feature.attributes;
-
                 document.getElementById('projectName').innerText = projectData["نام پروژه"] || "پروژه کلاس‌چین";
                 document.getElementById('projectDesc').innerText = `${
                     projectData["نوع پروژه (نیاز)"] || ""} — ${
