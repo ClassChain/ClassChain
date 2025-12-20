@@ -124,21 +124,21 @@
     position: relative;  /* حذف display: flex و flex-direction چون لازم نیست و ممکنه تداخل ایجاد کنه */
     box-sizing: border-box;
 }
-		
-.fixed-contribute-button {
-    position: sticky;
-    bottom: 10px;  /* کمی بالاتر از پایین تا زیبا تر بشه */
-    left: 15px;
-    right: 15px;
-    text-align: center;
-    background: rgba(39, 174, 96, 0.98);
-    padding: 18px 15px;
-    border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-    backdrop-filter: blur(12px);
-    z-index: 20;  /* z-index بالاتر تا مطمئن بشیم روی همه چیز باشه */
-    border: 1px solid rgba(255,255,255,0.15);
-}
+		.fixed-contribute-button {
+    		position: sticky;          /* نسبت به info-panel */
+    		bottom: 15px;
+    		left: 15px;
+    		right: 15px;
+    		text-align: center;
+    		background: rgba(39, 174, 96, 0.98);
+    		padding: 18px 15px;
+    		border-radius: 12px;
+    		box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    		backdrop-filter: blur(12px);
+    		z-index: 20;
+    		border: 1px solid rgba(255,255,255,0.15);
+    		display: none;               /* ← اضافه شد */
+		}
 		
 .fixed-contribute-button button {
     padding: 14px 28px;
@@ -751,6 +751,7 @@ async function contributeToProject(contractAddress) {
 </script>
 </body>
 </html>
+
 
 
 
