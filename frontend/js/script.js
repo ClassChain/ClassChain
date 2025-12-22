@@ -33,6 +33,15 @@ function setLang(lang) {
 }
 
 // همبرگر منو در موبایل
-document.querySelector('.menu-toggle').addEventListener('click', () => {
-    document.querySelector('.nav-links').classList.toggle('active');
+const menuToggle = document.querySelector('.menu-toggle');
+const navLinks = document.querySelector('.nav-links');
+
+menuToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+    menuToggle.classList.toggle('active');  // برای تبدیل به ×
 });
+
+//    document.querySelector('.menu-toggle').addEventListener('click', () => {
+//    document.querySelector('.nav-links').classList.toggle('active');
+//});
+
