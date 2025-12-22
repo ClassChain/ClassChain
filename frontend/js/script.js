@@ -457,12 +457,11 @@ async function loadDonors(contractAddress) {
 
 // در نهایت:
 function zoomToIran() {
-	map.flyTo([32.4279, 53.6880], 5, { animate: true, duration: 1.5 });
-
-	if (selectedLayer) { geo?.resetStyle(selectedLayer); selectedLayer = null; }
-	if (selectedCountyLayer) { countiesLayer?.resetStyle(selectedCountyLayer); selectedCountyLayer = null; }
-	if (selectedProjectMarker) { selectedProjectMarker.setIcon(projectIcon); selectedProjectMarker = null; }
-	if (countiesLayer) map.removeLayer(countiesLayer);
+        map.flyTo([32.4279, 53.6880], 5, { animate: true, duration: 1.5 });
+        if (selectedLayer) { geo?.resetStyle(selectedLayer); selectedLayer = null; }
+        if (selectedCountyLayer) { countiesLayer?.resetStyle(selectedCountyLayer); selectedCountyLayer = null; }
+        if (selectedProjectMarker) { selectedProjectMarker.setIcon(projectIcon); selectedProjectMarker = null; }
+        if (countiesLayer) map.removeLayer(countiesLayer);
 	showInPanel(`
 		<div class="no-selection">
 			<div class="icon">Map</div>
@@ -472,10 +471,11 @@ function zoomToIran() {
     `);
 	const fixedBtn = document.getElementById('fixedContributeBtn');
 	if (fixedBtn) fixedBtn.style.display = 'none';
+	currentContractAddress = null;
 	closePanel(); // در موبایل پنل بسته شود
-    fixedContributeBtn.style.display = 'none';
-    currentContractAddress = null;
-    currentProjectId = null;
+    //fixedContributeBtn.style.display = 'none';
+    //currentContractAddress = null;
+    //currentProjectId = null;
 }
 
 const basemapLayers = {
@@ -502,4 +502,5 @@ function redirectToDonate(projectId) {
         alert('پروژه انتخاب نشده است');
     }
 }	
+
 
