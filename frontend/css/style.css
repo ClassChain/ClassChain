@@ -83,6 +83,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; height: 100
 
 @media (min-width: 1024px) {
     .close-btn { display: none; }
+    .home-button {top: 20px; }
 }
 
 /* محتوای پنل */
@@ -185,3 +186,4 @@ position: absolute;
     }
 
 }
+
