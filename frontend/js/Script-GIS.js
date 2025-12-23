@@ -50,27 +50,27 @@ closePanelBtn.addEventListener('click', closePanel);
 //    infoPanelWrapper.style.transform = '';
 //});
 // Drag طبیعی در موبایل — بدون بسته شدن خودکار
-let touchStartY = 0;
-infoPanelWrapper.addEventListener('touchstart', e => {
-    touchStartY = e.touches[0].clientY;
-}, { passive: true });
+//let touchStartY = 0;
+//infoPanelWrapper.addEventListener('touchstart', e => {
+//    touchStartY = e.touches[0].clientY;
+//}, { passive: true });
 
-infoPanelWrapper.addEventListener('touchmove', e => {
-    if (window.innerWidth >= 1024) return;
-    const deltaY = e.touches[0].clientY - touchStartY;
-    if (deltaY > 0) { // فقط کشیدن به پایین
-        infoPanelWrapper.style.transition = 'none';
-        infoPanelWrapper.style.transform = `translateY(${deltaY}px)`;
-    }
-}, { passive: false });
+//infoPanelWrapper.addEventListener('touchmove', e => {
+//    if (window.innerWidth >= 1024) return;
+//    const deltaY = e.touches[0].clientY - touchStartY;
+//    if (deltaY > 0) { // فقط کشیدن به پایین
+//        infoPanelWrapper.style.transition = 'none';
+//        infoPanelWrapper.style.transform = `translateY(${deltaY}px)`;
+//    }
+//}, { passive: false });
 
-infoPanelWrapper.addEventListener('touchend', () => {
-    if (window.innerWidth >= 1024) return;
+//infoPanelWrapper.addEventListener('touchend', () => {
+//    if (window.innerWidth >= 1024) return;
     
     // همیشه به حالت باز برگردد — بسته نشود
-    infoPanelWrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
-    infoPanelWrapper.style.transform = '';
-});
+//    infoPanelWrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
+//    infoPanelWrapper.style.transform = '';
+//});
 
 // تابع نمایش محتوا در پنل
 function showInPanel(content) {
