@@ -71,6 +71,50 @@ closePanelBtn.addEventListener('click', closePanel);
 //    infoPanelWrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
 //    infoPanelWrapper.style.transform = '';
 //});
+// هندل برای باز کردن دستی پنل با drag به بالا در موبایل
+let startY = 0;
+let isDragging = false;
+const minDragDistance = 100; // حداقل فاصله برای باز شدن کامل
+
+infoPanelWrapper.addEventListener('touchstart', e => {
+    if (window.innerWidth >= 1024) return;
+    startY = e.touches[0].clientY;
+    isDragging = true;
+    infoPanelWrapper.style.transition = 'none'; // برای حرکت نرم در حین drag
+}, { passive: true });
+
+infoPanelWrapper.addEventListener('touchmove', e => {
+    if (!isDragging || window.innerWidth >= 1024) return;
+    const currentY = e.touches[0].clientY;
+    const deltaY = startY - currentY; // مثبت = کشیدن به بالا
+
+    if (deltaY > 0) {
+        // حداکثر تا 90% صفحه حرکت کند
+        const maxDrag = window.innerHeight * 0.9;
+        const dragAmount = Math.min(deltaY, maxDrag);
+        infoPanelWrapper.style.transform = `translateY(calc(100% - ${dragAmount}px))`;
+    }
+}, { passive: false });
+
+infoPanelWrapper.addEventListener('touchend', () => {
+    if (!isDragging || window.innerWidth >= 1024) return;
+    isDragging = false;
+
+    const currentTransform = infoPanelWrapper.style.transform;
+    const draggedPixels = currentTransform ? parseFloat(currentTransform.match(/(\d+(\.\d+)?)/)?.[0] || 0) : 0;
+
+    infoPanelWrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
+
+    if (draggedPixels > minDragDistance) {
+        // اگر به اندازه کافی کشیده شد → پنل کامل باز شود
+        infoPanelWrapper.classList.add('open');
+        infoPanelWrapper.style.transform = 'translateY(0)';
+    } else {
+        // اگر کم کشیده شد → برگرده به حالت بسته
+        infoPanelWrapper.style.transform = 'translateY(100%)';
+    }
+});
+
 
 // تابع نمایش محتوا در پنل
 function showInPanel(content) {
