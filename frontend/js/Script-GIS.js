@@ -72,27 +72,27 @@ closePanelBtn.addEventListener('click', closePanel);
 //    infoPanelWrapper.style.transform = '';
 //});
 // هندل برای باز کردن دستی پنل با drag به بالا در موبایل
-let startY = 0;
+// باز کردن پنل فقط با drag به بالا از پایین صفحه (در موبایل)
+// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+let touchStartY = 0;
 let isDragging = false;
-const minDragDistance = 100; // حداقل فاصله برای باز شدن کامل
 
 infoPanelWrapper.addEventListener('touchstart', e => {
     if (window.innerWidth >= 1024) return;
-    startY = e.touches[0].clientY;
+    touchStartY = e.touches[0].clientY;
     isDragging = true;
-    infoPanelWrapper.style.transition = 'none'; // برای حرکت نرم در حین drag
+    infoPanelWrapper.style.transition = 'none'; // برای حرکت نرم
 }, { passive: true });
 
 infoPanelWrapper.addEventListener('touchmove', e => {
     if (!isDragging || window.innerWidth >= 1024) return;
     const currentY = e.touches[0].clientY;
-    const deltaY = startY - currentY; // مثبت = کشیدن به بالا
+    const deltaY = touchStartY - currentY; // مثبت = کشیدن به بالا
 
     if (deltaY > 0) {
-        // حداکثر تا 90% صفحه حرکت کند
-        const maxDrag = window.innerHeight * 0.9;
-        const dragAmount = Math.min(deltaY, maxDrag);
-        infoPanelWrapper.style.transform = `translateY(calc(100% - ${dragAmount}px))`;
+        const progress = Math.min(deltaY / window.innerHeight, 1); // 0 تا 1
+        const translateY = (1 - progress) * 100; // از 100% به 0%
+        infoPanelWrapper.style.transform = `translateY(${translateY}%)`;
     }
 }, { passive: false });
 
@@ -100,20 +100,22 @@ infoPanelWrapper.addEventListener('touchend', () => {
     if (!isDragging || window.innerWidth >= 1024) return;
     isDragging = false;
 
-    const currentTransform = infoPanelWrapper.style.transform;
-    const draggedPixels = currentTransform ? parseFloat(currentTransform.match(/(\d+(\.\d+)?)/)?.[0] || 0) : 0;
+    // تشخیص اینکه کاربر چقدر کشیده
+    const style = window.getComputedStyle(infoPanelWrapper);
+    const matrix = style.transform;
+    const translateY = matrix === 'none' ? 100 : parseFloat(matrix.split(',')[5]) || 100;
 
     infoPanelWrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
 
-    if (draggedPixels > minDragDistance) {
-        // اگر به اندازه کافی کشیده شد → پنل کامل باز شود
+    if (translateY < 70) { // اگر بیشتر از 30% کشیده شده → باز بماند
         infoPanelWrapper.classList.add('open');
         infoPanelWrapper.style.transform = 'translateY(0)';
     } else {
-        // اگر کم کشیده شد → برگرده به حالت بسته
+        infoPanelWrapper.classList.remove('open');
         infoPanelWrapper.style.transform = 'translateY(100%)';
     }
 });
+// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 // تابع نمایش محتوا در پنل
