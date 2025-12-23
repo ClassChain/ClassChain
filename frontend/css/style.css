@@ -125,8 +125,29 @@ display: none;
 }
 
 .mobile-lang {
-    display: none; /* پیش‌فرض مخفی */
-    margin-bottom: 1.5rem;
+	display: none;
+    margin-bottom: 2rem;
+    padding: 0.8rem 1.5rem;
+    background: rgba(17,24,39,0.9);
+    border-radius: 50px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(139,92,246,0.4);
+}
+
+.mobile-lang button {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    font-size: 1.1rem;
+    border-radius: 30px;
+}
+
+.mobile-lang button.active {
+    color: #8b5cf6;
+    background: rgba(139,92,246,0.3);
 }
 
 /* محتوای اصلی */
@@ -239,40 +260,57 @@ footer {
         padding: 1rem 1.5rem;
         justify-content: space-between;
     }
-    .navbar-brand { font-size: 1.7rem; }
+    .navbar-brand { 
+		font-size: 1.7rem; 
+		transition: opacity 0.3s ease;
+	}
 
     .nav-links {
 		position: fixed;
-        top: 76px;                 /* زیر navbar */
+        top: 0;                    /* ← از 76px به 0 تغییر کرد — کاملاً از بالا شروع می‌شود */
         left: 0;
         right: 0;
+        height: 100vh;             /* ← کل صفحه را می‌پوشاند */
         background: rgba(10,14,23,0.98);
         flex-direction: column;
+        justify-content: flex-start;
         align-items: center;
-        padding-top: 1.5rem;
-        gap: 2rem;
+        padding-top: 100px;        /* ← فضای کافی برای سوئیچ زبان و دکمه × */
+        gap: 1.8rem;
         transform: translateY(-100%);
         transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-        backdrop-filter: blur(15px);
-        border-bottom: 1px solid rgba(139,92,246,0.3);
+        backdrop-filter: blur(20px);
         z-index: 999;
     }
 
     .nav-links.active {
         transform: translateY(0);
     }
-
-    .nav-links a { font-size: 1.3rem; margin: 0; }
-
-    .menu-toggle { display: block; }
 	
+	.nav-links.active ~ .navbar-brand,
+    .nav-links.active + .navbar-brand {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+	.nav-links a {
+        font-size: 1.5rem;
+        opacity: 0.9;
+    }
+	.menu-toggle {
+        display: block;
+        position: relative;
+        z-index: 1001;
+    }	
 	.desktop-lang {
         display: none; /* در موبایل مخفی شود */
     }
 
     .mobile-lang {
-        display: block; /* در منوی موبایل نمایش داده شود */
-    }
+		display: block;
+        position: absolute;
+        top: 90px;                 /* ← دقیقاً زیر دکمه × */   
+	}
 	
     .lang-switch {
         top: 80px;
@@ -296,6 +334,7 @@ footer {
     .hero-subtitle { font-size: 1.3rem; }
     .btn { padding: 1rem 2.5rem; font-size: 1.2rem; }
 }
+
 
 
 
