@@ -131,6 +131,7 @@ display: none;
     left: 50%;
     transform: translateX(-50%);
 	width: fit-content;        /* عرض خودکار بر اساس محتوا */
+	direction: ltr;                      /* ← این خط جدید و کلیدی است: جهت سوئیچ را LTR می‌کند تا وسط دقیق باشد */
 }
 
 .mobile-lang button {
@@ -332,6 +333,7 @@ footer {
     .hero-subtitle { font-size: 1.3rem; }
     .btn { padding: 1rem 2.5rem; font-size: 1.2rem; }
 }
+
 
 
 
