@@ -27,7 +27,7 @@
     <nav class="navbar">
         <div class="navbar-brand" data-fa="کلاس‌چِین" data-en="ClassChain">کلاس‌چِین</div>
         
-        <button class="menu-toggle" aria-label="منو">
+        <button class="menu-toggle" aria-label="باز کردن منو">
 			<svg viewBox="0 0 100 100">
 				<rect class="line top" x="10" y="20" width="80" height="8" rx="4" fill="white"/>
 				<rect class="line mid" x="10" y="46" width="80" height="8" rx="4" fill="white"/>
@@ -36,7 +36,7 @@
 		</button>
         
         <div class="nav-links">
-			<div class="lang-switch mobile-lang">
+			<div class="mobile-lang">
 				<button class="active" onclick="setLang('fa')">فارسی</button>
 				<button onclick="setLang('en')">English</button>
 			</div>
@@ -46,7 +46,10 @@
             <a href="#" data-fa="درباره ما" data-en="About Us">درباره ما</a>
         </div>
     </nav>
-
+	<div class="desktop-lang">
+		<button class="active" onclick="setLang('fa')">فارسی</button>
+		<button onclick="setLang('en')">English</button>
+	</div>
     <!-- محتوای اصلی -->
     <div class="hero">
         <h1 class="hero-title" data-fa="هر کودکی شایسته‌ی کلاس امن است" data-en="Every Child Deserves a Safe Classroom">
