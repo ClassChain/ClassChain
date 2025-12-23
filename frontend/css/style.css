@@ -133,9 +133,9 @@ body, html {
     pointer-events: auto;
 }
 
-.mobile-lang > * {
-    display: inline-block;
-}
+/*.mobile-lang > * { */
+/*    display: inline-block; */
+/*} */
 
 .mobile-lang button {
     background: none;
@@ -336,6 +336,7 @@ footer {
     .hero-subtitle { font-size: 1.3rem; }
     .btn { padding: 1rem 2.5rem; font-size: 1.2rem; }
 }
+
 
 
 
