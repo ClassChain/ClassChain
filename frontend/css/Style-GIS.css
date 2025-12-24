@@ -151,7 +151,10 @@ position: absolute;
 
 /* حالت موبایل: Bottom Sheet */
 @media (max-width: 1023px) {
-    .home-button { top: 20px; }
+    .home-button { 
+		top: 20px; 
+		left: 70px;
+	}
     .info-panel {
         position: fixed;
         bottom: 0;
@@ -187,11 +190,11 @@ position: absolute;
         border-radius: 3px;
     }
     .custom-basemap-selector {
-		top: 10px;                /* زیر دکمه خانه (که در top:20px است) */
-        bottom: auto;
-		right: 10px;
-        padding: 10px 14px;
-        min-width: 240px;
+        top: 10px;
+        right: 10px;
+        padding: 8px 12px;          /* کوچکتر از 10px 14px */
+        min-width: 200px;           /* کوچکتر از 240px - عرض کمتر */
+        max-width: 220px;           /* اختیاری: محدود کردن حداکثر */
     }
 	.close-btn {
         display: block !important;
@@ -203,7 +206,7 @@ position: absolute;
     #basemapSelect {
 		width: 100%;
         font-size: 12px;
-        padding: 12px 16px;
+        padding: 10px 14px;
         text-align: center;
     }
 }
