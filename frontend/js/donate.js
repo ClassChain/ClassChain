@@ -1,97 +1,131 @@
-let projectData = null;
-let currentContract = null;
-let selectedNetwork = 'polygon';
 let selectedAmount = 0;
-let web3 = null;
+let selectedNetwork = 'polygon';
+let currentContract = null;
 let userAddress = null;
+let web3 = null;
 
 const networks = {
-    polygon: { chainId: 80002, usdtAddress: "0x41E94Eb019C0762f9Bfcf9Fb78E59bec0a32e187", explorer: "https://amoy.polygonscan.com" },
-    tron: { usdtAddress: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t", explorer: "https://tronscan.org/#" },
-    ethereum: { chainId: 1, usdtAddress: "0xdAC17F958D2ee523a2206206994597C13D831ec7", explorer: "https://etherscan.io" },
-    bsc: { chainId: 56, usdtAddress: "0x55d398326f99059fF775485246999027B3197955", explorer: "https://bscscan.com" },
-    arbitrum: { chainId: 42161, usdtAddress: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", explorer: "https://arbiscan.io" },
-    optimism: { chainId: 10, usdtAddress: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58", explorer: "https://optimistic.etherscan.io" },
-    avalanche: { chainId: 43114, usdtAddress: "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7", explorer: "https://snowtrace.io" },
-    solana: { usdtAddress: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", explorer: "https://solscan.io" }
+            amoy: {
+                name: "Polygon Amoy (تست‌نت)",
+                icon: "https://cryptologos.cc/logos/polygon-matic-logo.png",
+                addressField: "contractAddress",
+                usdtAddress: "0x41e94eb019c0762f9bfcf9fb78e59bec0a32e187",
+                chainId: 80002,
+                explorer: "https://amoy.polygonscan.com",
+            },
+            polygon: {
+                name: "Polygon Mainnet",
+                icon: "https://cryptologos.cc/logos/polygon-matic-logo.png",
+                addressField: "contractAddressMainnet",
+                usdtAddress: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
+                chainId: 137,
+                explorer: "https://polygonscan.com",
+            },
+            ethereum: {
+                name: "Ethereum",
+                icon: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
+                addressField: "contractAddressEthereum",
+                usdtAddress: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+                chainId: 1,
+                explorer: "https://etherscan.io",
+            },
+            bsc: {
+                name: "Binance Smart Chain",
+                icon: "https://cryptologos.cc/logos/binance-coin-bnb-logo.png",
+                addressField: "contractAddressBSC",
+                usdtAddress: "0x55d398326f99059ff7754852469993b3197955e7",
+                chainId: 56,
+                explorer: "https://bscscan.com",
+            },
+            tron: {
+                name: "Tron (TRC-20)",
+                icon: "https://cryptologos.cc/logos/tron-trx-logo.png",
+                addressField: "contractAddressTron",
+                usdtAddress: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+                chainId: null,
+                explorer: "https://tronscan.org",
+            },
+            arbitrum: {
+                name: "Arbitrum One",
+                icon: "https://cryptologos.cc/logos/arbitrum-arb-logo.png",
+                addressField: "contractAddressArbitrum",
+                usdtAddress: "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+                chainId: 42161,
+                explorer: "https://arbiscan.io",
+            },
+            optimism: {
+                name: "Optimism",
+                icon: "https://cryptologos.cc/logos/optimism-ethereum-op-logo.png",
+                addressField: "contractAddressOptimism",
+                usdtAddress: "0x94b008aa00579c13056b0a762ad3af54ac829873",
+                chainId: 10,
+                explorer: "https://optimistic.etherscan.io",
+            },
+            avalanche: {
+                name: "Avalanche",
+                icon: "https://cryptologos.cc/logos/avalanche-avax-logo.png",
+                addressField: "contractAddressAvalanche",
+                usdtAddress: "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7",
+                chainId: 43114,
+                explorer: "https://snowtrace.io",
+            },
+            solana: {
+                name: "Solana",
+                icon: "https://cryptologos.cc/logos/solana-sol-logo.png",
+                addressField: "contractAddressSolana",
+                usdtAddress: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+                chainId: null,
+                explorer: "https://solscan.io",
+            }
+
+    // در صورت اضافه کردن شبکه‌های دیگر اینجا اضافه کنید
 };
 
-function isTronReady() {
-    return typeof window.tronWeb !== 'undefined' && window.tronWeb && window.tronWeb.defaultAddress.base58;
-}
+const projects = {}; // در پروژه واقعی این از Projects.json لود می‌شود
 
 async function loadProject() {
     const urlParams = new URLSearchParams(window.location.search);
     const projectId = urlParams.get('project');
 
     if (!projectId) {
-        document.getElementById('projectTitle').innerText = 'پروژه یافت نشد';
+        document.getElementById('projectTitle').innerText = "پروژه یافت نشد";
         return;
     }
 
-    try {
-        const response = await fetch('data/Projects.json');
-        const data = await response.json();
+    // لود Projects.json (در پروژه واقعی مسیر درست را تنظیم کنید)
+    const response = await fetch('../data/Projects.json');
+    const data = await response.json();
 
-        const feature = data.features.find(f => f.attributes.ProjectID === projectId);
-        if (!feature) {
-            document.getElementById('projectTitle').innerText = 'پروژه یافت نشد';
-            return;
+    let foundProject = null;
+    data.features.forEach(feature => {
+        if (feature.attributes.ProjectID === projectId) {
+            foundProject = feature.attributes;
         }
+    });
 
-        projectData = feature.attributes;
-        document.getElementById('projectTitle').innerText = projectData["نام پروژه"] || 'نامشخص';
-        document.getElementById('province').innerText = projectData.استان || '-';
-        document.getElementById('region').innerText = projectData.منطقه || '-';
-        document.getElementById('projectType').innerText = projectData["نوع پروژه (نیاز)"] || '-';
-        document.getElementById('classCount').innerText = projectData["تعداد کلاس"] || '-';
-        document.getElementById('area').innerText = projectData["زیربنا"] || '-';
-        document.getElementById('targetAmount').innerText = (projectData["targetAmount(USDT)"] || 0).toLocaleString('fa-IR');
-
-        updateNetwork();
-        loadProgress();
-        loadDonorsList(); // اگر تابعی برای نمایش کمک‌کنندگان دارید
-
-    } catch (err) {
-        document.getElementById('projectTitle').innerText = 'خطا در بارگذاری پروژه';
-    }
-}
-
-function updateNetwork() {
-    selectedNetwork = document.getElementById('networkSelect').value;
-    const net = networks[selectedNetwork];
-
-    if (projectData[`contractAddress${selectedNetwork.charAt(0).toUpperCase() + selectedNetwork.slice(1)}`]) {
-        currentContract = projectData[`contractAddress${selectedNetwork.charAt(0).toUpperCase() + selectedNetwork.slice(1)}`];
-    } else {
-        currentContract = projectData.contractAddress || null;
+    if (!foundProject) {
+        document.getElementById('projectTitle').innerText = "پروژه یافت نشد";
+        return;
     }
 
-    const contractInfo = document.getElementById('contractInfo');
-    const qrContainer = document.getElementById('qrContainer');
-    const contractAddressEl = document.getElementById('contractAddress');
+    document.getElementById('projectTitle').innerText = foundProject["نام پروژه"];
+    document.getElementById('projectDesc').innerText = `${foundProject.استان} - ${foundProject.منطقه} | ${foundProject["تعداد کلاس"]} کلاس`;
 
-    if (currentContract) {
-        contractInfo.style.display = 'block';
-        contractAddressEl.innerText = currentContract;
-        qrContainer.innerHTML = '';
-        new QRCode(qrContainer, {
-            text: currentContract,
-            width: 200,
-            height: 200
-        });
-    } else {
-        contractInfo.style.display = 'none';
-        qrContainer.innerHTML = '';
-    }
-}
+    const target = foundProject["targetAmount(USDT)"] || 0;
+    currentContract = foundProject.contractAddress || foundProject.contractAddressTron || null;
 
-async function loadProgress() {
-    const target = parseFloat(projectData["targetAmount(USDT)"]) || 1000;
-    const raised = Math.floor(Math.random() * target * 0.3);
-    const percent = (raised / target) * 100;
-    document.getElementById('progressFill').style.width = percent + '%';
-    document.getElementById('progressText').innerText = `${raised.toFixed(2)} USDT از ${target.toLocaleString('fa-IR')} USDT جمع شده`;
+    // پر کردن سلکتور شبکه
+    const select = document.getElementById('networkSelect');
+    select.innerHTML = '';
+    Object.keys(networks).forEach(key => {
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = networks[key].name;
+        select.appendChild(opt);
+    });
+
+    loadProgress(target);
+    loadDonors();
 }
 
 function selectAmount(amount) {
@@ -102,6 +136,22 @@ function selectAmount(amount) {
 document.getElementById('customAmount').oninput = (e) => {
     selectedAmount = parseFloat(e.target.value) || 0;
 };
+
+function selectNetwork(network) {
+    selectedNetwork = network;
+    const net = networks[network];
+    currentContract = (network === 'tron') ? projects.contractAddressTron : projects.contractAddress;
+    document.getElementById('qrSection').style.display = network === 'tron' ? 'block' : 'none';
+}
+
+async function loadProgress(target = 100000) {
+    // در نسخه واقعی از API اکسپلورر جمع‌آوری می‌شود
+    const totalRaised = 0; // مقدار واقعی را جایگزین کنید
+    const percent = Math.min((totalRaised / target) * 100, 100);
+
+    document.getElementById('progressFill').style.width = percent + '%';
+    document.getElementById('progressText').innerText = `${totalRaised.toFixed(2)} USDT از ${target.toLocaleString('fa-IR')} USDT جمع شده (${percent.toFixed(1)}%)`;
+}
 
 document.getElementById('connectBtn').onclick = async () => {
     if (!currentContract) {
@@ -116,6 +166,9 @@ document.getElementById('connectBtn').onclick = async () => {
 
     const net = networks[selectedNetwork];
 
+    /* =========================
+       شاخه TRON — پرداخت یک‌کلیکی
+       ========================= */
     if (selectedNetwork === 'tron') {
         if (!isTronReady()) {
             alert("لطفاً TronLink را نصب و فعال کنید");
@@ -150,6 +203,10 @@ document.getElementById('connectBtn').onclick = async () => {
 
         return;
     }
+
+    /* =========================
+       شاخه EVM — بدون تغییر
+       ========================= */
 
     if (typeof window.ethereum === 'undefined') {
         alert("لطفاً MetaMask یا کیف پول سازگار نصب کنید");
@@ -203,6 +260,7 @@ document.getElementById('connectBtn').onclick = async () => {
     }
 };
 
+// فعال کردن دکمه با تیک چک‌باکس
 document.getElementById('termsConsent').addEventListener('change', function() {
     document.getElementById('connectBtn').disabled = !this.checked;
 });
@@ -238,4 +296,9 @@ particlesJS("particles-js", {
     }
 });
 
+function isTronReady() {
+    return window.tronWeb && window.tronWeb.defaultAddress.base58;
+}
+
+// اجرای اولیه
 loadProject();
