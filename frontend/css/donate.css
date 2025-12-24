@@ -116,41 +116,54 @@ body, html {
 }
 
 .main-content { flex: 2; }
-.sidebar { flex: 1; background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; }
-
-.project-title {
-    font-size: 2.5rem;
-    font-weight: 900;
-    background: linear-gradient(120deg, #4cc9f0, #8b5cf6, #c084fc);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    margin-bottom: 1rem;
-    text-align: center;
+.sidebar { 
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    padding: 1.5rem;
+    border-radius: 12px;
 }
 
-/* بقیه استایل‌ها دقیقاً همان قبلی (progress, buttons, etc.) */
-.project-info p { margin: 0.8rem 0; }
+.main-content h1 { font-size: 1.8rem; margin-bottom: 1rem; }
+.main-content p { opacity: 0.9; line-height: 1.7; }
+
 .progress-container { margin: 2rem 0; }
-.progress-bar { width: 100%; background: rgba(255,255,255,0.1); border-radius: 10px; height: 20px; overflow: hidden; }
+.progress-bar { height: 20px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
 .progress-fill { height: 100%; background: linear-gradient(90deg, #10b981, #34d399); width: 0%; transition: width 1s ease; }
-.progress-text { text-align: center; margin-top: 0.5rem; }
+.progress-text { text-align: center; margin-top: 0.5rem; font-weight: 600; }
 
-.donation-section h3 { margin: 1.5rem 0 1rem; }
-.donation-section select, .donation-section input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; }
-.amount-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin: 15px 0; }
-.amount-buttons button { padding: 10px 20px; background: rgba(139,92,246,0.3); border: none; border-radius: 8px; color: white; cursor: pointer; }
-.amount-buttons button:hover { background: #8b5cf6; }
+.donation-section, .network-selector { margin: 2rem 0; }
+.donation-section h2, .network-selector h2 { margin-bottom: 1rem; }
 
-.contract-info { margin: 20px 0; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; }
-.contract-info code { display: block; word-break: break-all; font-size: 0.9em; margin-top: 10px; }
+.amount-buttons { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 1rem; }
+.amount-buttons button { padding: 0.8rem 1.2rem; background: rgba(139,92,246,0.2); border: 1px solid #8b5cf6; border-radius: 12px; color: white; cursor: pointer; }
+.amount-buttons button:hover { background: rgba(139,92,246,0.4); }
 
-.terms { margin: 20px 0; display: flex; align-items: center; gap: 10px; }
-.btn-connect { width: 100%; padding: 16px; background: #27ae60; color: white; border: none; border-radius: 12px; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
-.btn-connect:disabled { background: #95a5a6; cursor: not-allowed; }
+#customAmount { width: 100%; padding: 1rem; border-radius: 12px; border: 1px solid rgba(139,92,246,0.4); background: rgba(17,24,39,0.8); color: white; font-size: 1.1rem; }
 
-.success-message { margin-top: 20px; padding: 15px; background: rgba(16,185,129,0.2); border-radius: 10px; text-align: center; }
+#networkSelect { width: 100%; padding: 1rem; border-radius: 12px; background: rgba(17,24,39,0.8); color: white; border: 1px solid rgba(139,92,246,0.4); }
 
-.email-section { margin-top: 20px; }
-.email-section input[type="email"] { width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); }
-.email-section button { width: 100%; padding: 12px; background: #6366f1; border: none; border-radius: 8px; color: white; margin-top: 10px; cursor: pointer; }
+.connect-btn {
+    width: 100%;
+    padding: 1.2rem;
+    background: linear-gradient(135deg, #10b981, #34d399);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 1.5rem;
+}
+
+.connect-btn:disabled { background: #6b7280; cursor: not-allowed; }
+
+.success-message { margin-top: 2rem; padding: 1.5rem; background: rgba(16,185,129,0.2); border-radius: 12px; text-align: center; }
+
+.qr-section { text-align: center; margin: 2rem 0; }
+#qrcode { margin: 1rem auto; }
+
+.project-image img { width: 100%; border-radius: 12px; }
+.donors-list { margin-top: 1.5rem; }
+.email-subscribe { margin-top: 2rem; }
+.email-subscribe input { width: 100%; padding: 0.8rem; margin: 0.5rem 0; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; }
+.email-subscribe button { width: 100%; padding: 0.8rem; background: #8b5cf6; border: none; border-radius: 8px; color: white; cursor: pointer; }
