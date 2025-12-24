@@ -13,6 +13,14 @@ const networks = {
                 chainId: 80002,
                 explorer: "https://amoy.polygonscan.com",
             },
+            CLC: {
+                name: "CLC ClassChain (تست‌نت)",
+                icon: "https://cryptologos.cc/logos/polygon-matic-logo.png",
+                addressField: "contractAddress",
+                usdtAddress: "0x39Af73d2736f6EC94778a38c0C7Ef800e58B13a7",
+                chainId: 80002,
+                explorer: "https://amoy.polygonscan.com",
+            },
             polygon: {
                 name: "Polygon Mainnet",
                 icon: "https://cryptologos.cc/logos/polygon-matic-logo.png",
@@ -297,5 +305,6 @@ function isTronReady() {
 
 // اجرای اولیه
 loadProject();
+
 
 
