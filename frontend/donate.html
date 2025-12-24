@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
     <!-- استایل اصلی صفحه -->
-    <link rel="stylesheet" href="css/donate.css">
+    <link rel="stylesheet" href="css/style-donate.css">
 
     <!-- Particles.js -->
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
@@ -25,100 +25,82 @@
     <div id="particles-js"></div>
     <div class="hexagon-grid"></div>
 
-    <!-- منوبار -->
-    <nav class="navbar">
-        <div class="navbar-brand">کلاس‌چین</div>
-        <div class="nav-links">
-            <a href="#">اهداف پروژه</a>
-            <a href="#">White Paper</a>
-            <a href="#">ارتباط با ما</a>
-            <a href="#">درباره ما</a>
-        </div>
-    </nav>
-
     <!-- سوئیچ زبان -->
     <div class="lang-switch">
         <button class="active" onclick="setLang('fa')">فارسی</button>
         <button onclick="setLang('en')">English</button>
     </div>
 
-    <div class="main-container">
-        <h1 class="project-title" id="projectTitle">در حال بارگذاری پروژه...</h1>
+    <!-- منوبار -->
+    <nav class="navbar">
+        <div class="navbar-brand">کلاس‌چین</div>
+        <div class="nav-links">
+            <a href="../index.html">خانه</a>
+            <a href="../WebGIS.html">نقشه پروژه‌ها</a>
+            <a href="#">درباره ما</a>
+            <a href="#">ارتباط با ما</a>
+        </div>
+    </nav>
 
+    <div class="main-container">
         <div class="card">
             <div class="main-content">
-                <div class="project-info">
-                    <p><strong>استان:</strong> <span id="province"></span></p>
-                    <p><strong>منطقه:</strong> <span id="region"></span></p>
-                    <p><strong>نوع پروژه:</strong> <span id="projectType"></span></p>
-                    <p><strong>تعداد کلاس:</strong> <span id="classCount"></span></p>
-                    <p><strong>زیربنا:</strong> <span id="area"></span> متر مربع</p>
-                    <p><strong>هدف مالی:</strong> <span id="targetAmount"></span> USDT</p>
-                </div>
+                <h1 class="project-title" id="projectName">در حال بارگذاری...</h1>
+                <p id="projectDesc">در حال بارگذاری جزئیات پروژه...</p>
 
                 <div class="progress-container">
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressFill"></div>
                     </div>
-                    <p class="progress-text" id="progressText">در حال بارگذاری...</p>
+                    <p class="progress-text" id="progressText">در حال محاسبه...</p>
                 </div>
 
-                <div class="donation-section">
-                    <h3>انتخاب شبکه و مبلغ مشارکت</h3>
-                    <select id="networkSelect" onchange="updateNetwork()">
-                        <option value="polygon">Polygon (تست نت Amoy)</option>
-                        <option value="tron">Tron</option>
-                        <option value="ethereum">Ethereum</option>
-                        <option value="bsc">BSC</option>
-                        <option value="arbitrum">Arbitrum</option>
-                        <option value="optimism">Optimism</option>
-                        <option value="avalanche">Avalanche</option>
-                        <option value="solana">Solana (به زودی)</option>
-                    </select>
+                <h3>انتخاب شبکه بلاکچین</h3>
+                <select id="networkSelect" onchange="selectNetwork(this.value)"></select>
 
-                    <div class="amount-buttons">
-                        <button onclick="selectAmount(10)">10 USDT</button>
-                        <button onclick="selectAmount(25)">25 USDT</button>
-                        <button onclick="selectAmount(50)">50 USDT</button>
-                        <button onclick="selectAmount(100)">100 USDT</button>
-                    </div>
+                <h3>انتخاب مبلغ پیشنهادی (USDT)</h3>
+                <div class="amount-buttons">
+                    <button onclick="selectAmount(10)">۱۰ USDT</button>
+                    <button onclick="selectAmount(25)">۲۵ USDT</button>
+                    <button onclick="selectAmount(50)">۵۰ USDT</button>
+                    <button onclick="selectAmount(100)">۱۰۰ USDT</button>
+                    <button onclick="selectAmount(250)">۲۵۰ USDT</button>
+                </div>
 
-                    <input type="number" id="customAmount" placeholder="مبلغ دلخواه (USDT)" min="1">
+                <h3>یا مبلغ دلخواه وارد کنید</h3>
+                <input type="number" id="customAmount" placeholder="مبلغ به USDT" min="1" step="1">
 
-                    <div class="contract-info" id="contractInfo">
-                        <p><strong>آدرس خزانه هوشمند:</strong></p>
-                        <code id="contractAddress"></code>
-                        <div id="qrContainer"></div>
-                    </div>
+                <div class="terms">
+                    <input type="checkbox" id="termsConsent">
+                    <label for="termsConsent">با شرایط مشارکت و سیاست حفظ حریم خصوصی موافقم</label>
+                </div>
 
-                    <div class="terms">
-                        <input type="checkbox" id="termsConsent">
-                        <label for="termsConsent">قوانین و شرایط مشارکت را خواندم و می‌پذیرم</label>
-                    </div>
+                <button class="btn-primary" id="connectBtn" disabled>اتصال کیف پول و پرداخت</button>
 
-                    <button class="btn-connect" id="connectBtn" disabled>اتصال کیف پول و پرداخت</button>
-
-                    <div class="success-message" id="successMessage" style="display:none;">
-                        <p id="txHash"></p>
-                    </div>
+                <div id="successMessage" style="display:none; margin-top:2rem; padding:1.5rem; background:rgba(16,185,129,0.2); border-radius:12px; text-align:center;">
+                    <h3 style="color:#10b981;">✅ پرداخت با موفقیت انجام شد!</h3>
+                    <p id="txHash"></p>
                 </div>
             </div>
 
             <div class="sidebar">
-                <div id="donorsList">
-                    <p style="opacity:0.7;">در حال بارگذاری کمک‌کنندگان...</p>
-                </div>
+                <div id="qrCode"></div>
+                <p style="text-align:center; margin-top:1rem; opacity:0.8;">اسکن برای مشارکت سریع</p>
 
-                <div class="email-section">
+                <div style="margin-top:auto;">
                     <h4>دریافت آپدیت پروژه</h4>
-                    <input type="email" id="donorEmail" placeholder="ایمیل شما (اختیاری)">
-                    <label><input type="checkbox" id="consent"> بله، آپدیت‌ها را برایم ارسال کنید</label>
-                    <button onclick="saveEmail()">ثبت ایمیل</button>
+                    <input type="email" id="donorEmail" placeholder="ایمیل شما">
+                    <div class="terms">
+                        <input type="checkbox" id="consent">
+                        <label for="consent">موافقم آپدیت دریافت کنم</label>
+                    </div>
+                    <button onclick="saveEmail()" style="width:100%; margin-top:0.8rem;">ثبت ایمیل</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="js/donate.js"></script>
+    <!-- اسکریپت اصلی صفحه -->
+    <script src="js/script-donate.js"></script>
 </body>
 </html>
